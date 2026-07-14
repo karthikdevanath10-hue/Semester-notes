@@ -302,12 +302,36 @@ const Home = ({ onOpenLogin }) => {
           <p>We support various academic disciplines with resources mapped to their respective university syllabus guidelines.</p>
         </div>
         <div className="departments-grid">
-          <div className="dept-pill">Computer Science (CSE)</div>
-          <div className="dept-pill">Artificial Intelligence (AIML)</div>
-          <div className="dept-pill">Computer Applications (BCA)</div>
-          <div className="dept-pill">Civil Engineering</div>
-          <div className="dept-pill">Electrical Engineering</div>
-          <div className="dept-pill">Mechanical Engineering</div>
+          <div className="dept-card">
+            <div className="dept-icon-wrapper">💻</div>
+            <h3>Computer Science</h3>
+            <p>Core programming, algorithms, networks, and advanced computing materials.</p>
+          </div>
+          <div className="dept-card">
+            <div className="dept-icon-wrapper">🧠</div>
+            <h3>Artificial Intelligence</h3>
+            <p>Machine learning models, neural networks, data analysis, and scripting.</p>
+          </div>
+          <div className="dept-card">
+            <div className="dept-icon-wrapper">🖥️</div>
+            <h3>Computer Applications</h3>
+            <p>Database management systems, software development, and web environments.</p>
+          </div>
+          <div className="dept-card">
+            <div className="dept-icon-wrapper">🏗️</div>
+            <h3>Civil Engineering</h3>
+            <p>Structural engineering, building materials, surveying, and graphics.</p>
+          </div>
+          <div className="dept-card">
+            <div className="dept-icon-wrapper">⚡</div>
+            <h3>Electrical Engineering</h3>
+            <p>Circuit analysis, AC/DC machines, electromagnetics, and basic electronics.</p>
+          </div>
+          <div className="dept-card">
+            <div className="dept-icon-wrapper">⚙️</div>
+            <h3>Mechanical Engineering</h3>
+            <p>Thermodynamics, fluid mechanics, machine design, and steam turbines.</p>
+          </div>
         </div>
       </section>
 
