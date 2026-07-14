@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import SubjectCard from '../components/SubjectCard';
-import { Search, Library, ArrowRight, X, FileText, ExternalLink, Download, Rocket } from 'lucide-react';
+import { Search, Library, ArrowRight, X, FileText, ExternalLink, Download, Rocket, MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 const SUBJECTS_DATA = [
   // P-Cycle (Physics Cycle)
@@ -337,20 +337,101 @@ const Home = ({ onOpenLogin }) => {
           <h2>Contact Us</h2>
           <p>Have suggestions, feedback, or notes to contribute? We'd love to hear from you.</p>
         </div>
-        <div className="contact-card">
-          <div className="contact-info">
-            <div>
-              <strong>Email Support</strong>
-              <p>support@kaurahub.com</p>
+        
+        <div className="contact-container">
+          {/* Left Info Columns */}
+          <div className="contact-info-column">
+            
+            {/* Address Card */}
+            <div className="contact-info-card">
+              <div className="info-icon-wrapper">
+                <MapPin size={20} />
+              </div>
+              <div className="info-card-text">
+                <h3>Address</h3>
+                <p>Sapthagiri NPS University</p>
+                <p>Chikkabanavara, Bangalore</p>
+                <p>Karnataka - 560090, India</p>
+              </div>
             </div>
-            <div>
-              <strong>Academic Support</strong>
-              <p>academix@kaurahub.com</p>
+
+            {/* Phone Card */}
+            <div className="contact-info-card">
+              <div className="info-icon-wrapper">
+                <Phone size={20} />
+              </div>
+              <div className="info-card-text">
+                <h3>Phone</h3>
+                <p>+91 8660954976</p>
+                <p>+91 8088487801</p>
+              </div>
             </div>
+
+            {/* Email Card */}
+            <div className="contact-info-card">
+              <div className="info-icon-wrapper">
+                <Mail size={20} />
+              </div>
+              <div className="info-card-text">
+                <h3>Email</h3>
+                <p>eetirpltd@gmail.com</p>
+              </div>
+            </div>
+
+            {/* Office Hours Card */}
+            <div className="contact-info-card">
+              <div className="info-icon-wrapper">
+                <Clock size={20} />
+              </div>
+              <div className="info-card-text">
+                <h3>Office Hours</h3>
+                <p>Monday - Friday: 9:00 AM - 5:00 PM</p>
+                <p>Saturday: 9:00 AM - 1:00 PM</p>
+                <p>Sunday: Closed</p>
+              </div>
+            </div>
+
           </div>
-          <div className="contact-form-placeholder">
-            <p>If you would like to volunteer as a contributor, upload materials via the Admin Panel or reach out directly to the email addresses above.</p>
-          </div>
+
+          {/* Right Form Card */}
+          <form className="contact-form-card" onSubmit={(e) => {
+            e.preventDefault();
+            alert('Thank you for your message! We will get back to you shortly.');
+            e.target.reset();
+          }}>
+            <h2>Send us a Message</h2>
+            
+            <div className="form-row-two-col">
+              <div className="form-group">
+                <label>Full Name *</label>
+                <input type="text" placeholder="John Doe" required />
+              </div>
+              <div className="form-group">
+                <label>Email Address *</label>
+                <input type="email" placeholder="john@example.com" required />
+              </div>
+            </div>
+
+            <div className="form-row-two-col">
+              <div className="form-group">
+                <label>Phone Number</label>
+                <input type="tel" placeholder="+91 98765 43210" />
+              </div>
+              <div className="form-group">
+                <label>Subject *</label>
+                <input type="text" placeholder="Admission Inquiry" required />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Message *</label>
+              <textarea placeholder="Tell us how we can help you..." rows={5} required></textarea>
+            </div>
+
+            <button type="submit" className="btn btn-primary btn-submit-message">
+              Send Message
+            </button>
+          </form>
         </div>
       </section>
 
