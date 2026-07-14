@@ -5,7 +5,7 @@ import { Sun, Moon, LogOut, LogIn, LayoutDashboard, Notebook } from 'lucide-reac
 
 const Navbar = ({ onOpenLogin }) => {
   const { currentUser, userRole, userData, logout } = useAuth();
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const navigate = useNavigate();
 
   useEffect(() => {
