@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Lock, ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import { Lock, FileText, ArrowRight } from 'lucide-react';
 
 const SubjectCard = ({ subject, files = {}, isAuthenticated, onOpenLogin, onViewFiles }) => {
-  const { title, description, emoji } = subject;
+  const { title, description, emoji, semester } = subject;
   const [isOpen, setIsOpen] = useState(false);
   
   const docTypes = ['Module Notes', 'Question Bank', 'PYQs'];
@@ -18,24 +18,33 @@ const SubjectCard = ({ subject, files = {}, isAuthenticated, onOpenLogin, onView
   };
 
   const handleCardClick = (e) => {
-    if (e.target.closest('.card-categories-row') || e.target.closest('.subject-description')) {
+    if (e.target.closest('.card-categories-row') || e.target.closest('.explore-link')) {
       return;
     }
     setIsOpen(!isOpen);
   };
 
+  // Helper to assign a clean gradient class based on subject title
+  const getGradientClass = (title) => {
+    const lower = title.toLowerCase();
+    if (lower.includes('physics') || lower.includes('mechanic') || lower.includes('mes')) return 'grad-purple';
+    if (lower.includes('c programming') || lower.includes('python')) return 'grad-blue';
+    if (lower.includes('math') || lower.includes('electrical') || lower.includes('bec')) return 'grad-green';
+    return 'grad-teal';
+  };
+
   return (
     <div className={`subject-card ${isOpen ? 'expanded' : ''}`} onClick={handleCardClick}>
       <div className="card-top">
-        <div className="emoji-wrapper" role="img" aria-label={title}>
+        <div className={`emoji-wrapper ${getGradientClass(title)}`} role="img" aria-label={title}>
           {emoji}
         </div>
       </div>
       
-      {/* Subject Name Trigger Area */}
-      <div className="subject-dropdown-trigger">
+      <span className="subject-badge">{semester}</span>
+
+      <div className="subject-title-area">
         <h2>{title}</h2>
-        {isOpen ? <ChevronUp size={18} className="chevron-icon" /> : <ChevronDown size={18} className="chevron-icon" />}
       </div>
 
       <p className="subject-description">{description}</p>
@@ -56,13 +65,17 @@ const SubjectCard = ({ subject, files = {}, isAuthenticated, onOpenLogin, onView
                 disabled={isAuthenticated && !hasFiles}
                 title={!isAuthenticated ? 'Login to unlock' : !hasFiles ? 'No files uploaded' : `View ${type}`}
               >
-                {!isAuthenticated ? <Lock size={12} /> : <FileText size={12} />}
                 <span>{type} {hasFiles ? `(${count})` : ''}</span>
               </button>
             );
           })}
         </div>
       )}
+
+      <div className="explore-link" onClick={() => setIsOpen(!isOpen)}>
+        <span>{isOpen ? 'Close files' : 'Explore files'}</span>
+        <ArrowRight size={14} className="arrow-icon" />
+      </div>
     </div>
   );
 };
