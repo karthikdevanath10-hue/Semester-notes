@@ -34,7 +34,7 @@ const Navbar = ({ onOpenLogin }) => {
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
           <Notebook size={24} className="brand-icon" style={{ color: 'var(--accent-color)' }} />
-          <span>SemNotes</span>
+          <span>Academix</span>
         </Link>
 
         <div className="navbar-actions">
