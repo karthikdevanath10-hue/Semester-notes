@@ -277,6 +277,83 @@ const Home = ({ onOpenLogin }) => {
         </>
       )}
 
+      {/* About Us Section */}
+      <section id="about" className="landing-section">
+        <div className="section-header">
+          <h2>About Us</h2>
+          <p>Learn more about the AcademiX platform, our vision, and how we help engineering students excel.</p>
+        </div>
+        <div className="about-grid">
+          <div className="about-card">
+            <h3>Our Mission</h3>
+            <p>We aim to simplify academic access for engineering students by providing verified, high-quality lecture notes, curated question banks, and solved previous year question papers (PYQs)—all in one unified platform.</p>
+          </div>
+          <div className="about-card">
+            <h3>Verified Content</h3>
+            <p>Every document uploaded to AcademiX undergoes verification by our core admin team and faculty assistants to ensure accuracy, alignment with current university guidelines, and high readability standards.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Departments Section */}
+      <section id="departments" className="landing-section">
+        <div className="section-header">
+          <h2>Departments</h2>
+          <p>We support various academic disciplines with resources mapped to their respective university syllabus guidelines.</p>
+        </div>
+        <div className="departments-grid">
+          <div className="dept-pill">Computer Science (CSE)</div>
+          <div className="dept-pill">Artificial Intelligence (AIML)</div>
+          <div className="dept-pill">Computer Applications (BCA)</div>
+          <div className="dept-pill">Civil Engineering</div>
+          <div className="dept-pill">Electrical Engineering</div>
+          <div className="dept-pill">Mechanical Engineering</div>
+        </div>
+      </section>
+
+      {/* Announcements Section */}
+      <section id="announcements" className="landing-section">
+        <div className="section-header">
+          <h2>Announcements</h2>
+          <p>Stay up to date with recent syllabus changes, upload schedules, and notifications.</p>
+        </div>
+        <div className="announcements-container">
+          <div className="announcement-item">
+            <span className="announcement-date">July 2026</span>
+            <h4>Syllabus Realignment</h4>
+            <p>All Physics Cycle (P-Cycle) and Chemistry Cycle (E-Cycle) notes have been successfully updated to match the latest academic year guidelines.</p>
+          </div>
+          <div className="announcement-item">
+            <span className="announcement-date">June 2026</span>
+            <h4>Semester 3 Notes Launch</h4>
+            <p>Verified notes and previous year question papers (PYQs) for Data Structures, Computer Organization, and Discrete Mathematics are now fully live!</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="landing-section">
+        <div className="section-header">
+          <h2>Contact Us</h2>
+          <p>Have suggestions, feedback, or notes to contribute? We'd love to hear from you.</p>
+        </div>
+        <div className="contact-card">
+          <div className="contact-info">
+            <div>
+              <strong>Email Support</strong>
+              <p>support@kaurahub.com</p>
+            </div>
+            <div>
+              <strong>Academic Support</strong>
+              <p>academix@kaurahub.com</p>
+            </div>
+          </div>
+          <div className="contact-form-placeholder">
+            <p>If you would like to volunteer as a contributor, upload materials via the Admin Panel or reach out directly to the email addresses above.</p>
+          </div>
+        </div>
+      </section>
+
       {/* Drawer Overlay Backdrop */}
       {drawerData && (
         <div className="drawer-overlay" onClick={() => setDrawerData(null)}>
