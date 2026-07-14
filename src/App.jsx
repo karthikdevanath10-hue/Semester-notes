@@ -1,0 +1,52 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Navbar from './components/Navbar';
+import LoginModal from './components/LoginModal';
+import ProtectedRoute from './components/ProtectedRoute';
+import Home from './pages/Home';
+import AdminDashboard from './pages/AdminDashboard';
+
+function App() {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="app-container">
+          {/* Global Header / Navigation */}
+          <Navbar onOpenLogin={() => setIsLoginOpen(true)} />
+          
+          {/* Main Routing Panel */}
+          <Routes>
+            <Route 
+              path="/" 
+              element={<Home onOpenLogin={() => setIsLoginOpen(true)} />} 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            {/* Fallback route back to home */}
+            <Route 
+              path="*" 
+              element={<Home onOpenLogin={() => setIsLoginOpen(true)} />} 
+            />
+          </Routes>
+
+          {/* Authentication Modal Overlay */}
+          <LoginModal 
+            isOpen={isLoginOpen} 
+            onClose={() => setIsLoginOpen(false)} 
+          />
+        </div>
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;
