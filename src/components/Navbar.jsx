@@ -33,7 +33,7 @@ const Navbar = ({ onOpenLogin }) => {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to="/" className="navbar-brand">
-          <img src="/favicon.svg" alt="Academix Logo" style={{ height: '24px', width: 'auto' }} />
+          <Notebook size={24} className="brand-icon" style={{ color: 'var(--accent-color)' }} />
           <span>Academix</span>
         </Link>
 
