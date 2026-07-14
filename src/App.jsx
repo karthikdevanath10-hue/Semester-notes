@@ -6,6 +6,7 @@ import LoginModal from './components/LoginModal';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import AdminDashboard from './pages/AdminDashboard';
+import Footer from './components/Footer';
 
 function App() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -43,6 +44,9 @@ function App() {
             isOpen={isLoginOpen} 
             onClose={() => setIsLoginOpen(false)} 
           />
+
+          {/* Global Footer */}
+          <Footer />
         </div>
       </Router>
     </AuthProvider>
