@@ -26,6 +26,11 @@
   
   --navbar-bg: rgba(250, 250, 250, 0.75);
   --transition-speed: 0.25s;
+  
+  /* Glassmorphism variables */
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(228, 228, 231, 0.6);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.02), 0 1px 3px 0 rgba(0, 0, 0, 0.01);
 }
 
 [data-theme='dark'] {
@@ -50,6 +55,11 @@
   --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   
   --navbar-bg: rgba(9, 9, 11, 0.75);
+  
+  /* Glassmorphism variables */
+  --glass-bg: rgba(24, 24, 27, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -273,11 +283,19 @@ body {
   border-radius: 4px;
 }
 
-/* Page Intro/Header */
+/* Page Intro/Header - Stylized Glassmorphism Card */
 .page-header {
   text-align: center;
-  margin-bottom: 3rem;
-  margin-top: 1rem;
+  margin: 1.5rem auto 3rem auto;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  max-width: 850px;
+  width: 100%;
 }
 
 .page-title {
