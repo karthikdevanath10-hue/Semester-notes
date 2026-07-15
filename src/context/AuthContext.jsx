@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, useEffect } from 'react';
 import { 
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -16,9 +17,17 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-  const [userData, setUserData] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const localAdmin = localStorage.getItem('localAdminUser');
+    return localAdmin ? JSON.parse(localAdmin) : null;
+  });
+  const [userRole, setUserRole] = useState(() => {
+    return localStorage.getItem('localAdminRole') || null;
+  });
+  const [userData, setUserData] = useState(() => {
+    const localData = localStorage.getItem('localAdminData');
+    return localData ? JSON.parse(localData) : null;
+  });
   const [loading, setLoading] = useState(true);
 
   // Lookup the real email address associated with a USN or Faculty Admin ID
@@ -46,6 +55,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (id, password, role) => {
+    if (role === 'admin') {
+      const cleanId = id.trim().toLowerCase();
+      if (cleanId === 'admin' && password === 'admin@123') {
+        const fakeUser = { uid: 'admin-local-uid', email: 'admin@semesternotes.local' };
+        const fakeData = { name: 'Admin', role: 'admin', email: 'admin@semesternotes.local', adminId: 'ADMIN' };
+        
+        localStorage.setItem('localAdminUser', JSON.stringify(fakeUser));
+        localStorage.setItem('localAdminRole', 'admin');
+        localStorage.setItem('localAdminData', JSON.stringify(fakeData));
+
+        setCurrentUser(fakeUser);
+        setUserRole('admin');
+        setUserData(fakeData);
+        return fakeUser;
+      } else {
+        throw new Error('Invalid Admin credentials.');
+      }
+    }
+
     // 1. Get the real registered email address first
     const email = await getEmailByUsnOrId(id, role);
     
@@ -117,6 +145,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    localStorage.removeItem('localAdminUser');
+    localStorage.removeItem('localAdminRole');
+    localStorage.removeItem('localAdminData');
     await signOut(auth);
     setCurrentUser(null);
     setUserRole(null);
@@ -125,6 +156,12 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      const localAdmin = localStorage.getItem('localAdminUser');
+      if (localAdmin) {
+        setLoading(false);
+        return;
+      }
+
       if (user) {
         setCurrentUser(user);
         try {

@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { X, Lock, User, AlertCircle, KeySquare, Eye, EyeOff } from 'lucide-react';
+import { X, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 const LoginModal = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
   const { login, signUp, resetPassword } = useAuth();
   const [activeTab, setActiveTab] = useState('student'); // 'student' or 'admin'
   const [isSignUp, setIsSignUp] = useState(false);
@@ -21,6 +19,8 @@ const LoginModal = ({ isOpen, onClose }) => {
   // Password Visibility States
   const [showPassword, setShowPassword] = useState(false);
   const [showAdminSecret, setShowAdminSecret] = useState(false);
+
+  if (!isOpen) return null;
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -170,16 +170,16 @@ const LoginModal = ({ isOpen, onClose }) => {
 
           <div className="form-group">
             <label htmlFor="userId">
-              {activeTab === 'student' ? 'USN (University Seat Number)' : 'Faculty Admin ID'}
+              {activeTab === 'student' ? 'USN (University Seat Number)' : 'Username'}
             </label>
             <div style={{ position: 'relative' }}>
               <input 
                 type="text" 
                 id="userId"
-                placeholder={activeTab === 'student' ? 'e.g., 1MS23CS001' : 'e.g., ADM101'} 
+                placeholder={activeTab === 'student' ? 'e.g., 1MS23CS001' : 'e.g., admin'} 
                 value={id}
                 onChange={(e) => setId(e.target.value)}
-                style={{ textTransform: 'uppercase' }}
+                style={activeTab === 'student' ? { textTransform: 'uppercase' } : {}}
                 required
               />
             </div>
@@ -221,7 +221,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {!isSignUp && (
+          {!isSignUp && activeTab !== 'admin' && (
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-1rem', marginBottom: '1.25rem' }}>
               <button
                 type="button"
@@ -289,14 +289,16 @@ const LoginModal = ({ isOpen, onClose }) => {
           </button>
         </form>
 
-        <div className="form-footer">
-          <span>
-            {isSignUp ? 'Already have an account? ' : "Don't have an account yet? "}
-          </span>
-          <button onClick={handleModeChange} disabled={loading}>
-            {isSignUp ? 'Log In' : 'Sign Up'}
-          </button>
-        </div>
+        {activeTab !== 'admin' && (
+          <div className="form-footer">
+            <span>
+              {isSignUp ? 'Already have an account? ' : "Don't have an account yet? "}
+            </span>
+            <button onClick={handleModeChange} disabled={loading}>
+              {isSignUp ? 'Log In' : 'Sign Up'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
