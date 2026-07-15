@@ -8,7 +8,7 @@ const Footer = () => {
         
         {/* Brand Column */}
         <div className="footer-column brand-column">
-          <h2>Kaurahub</h2>
+          <h2>EETIRP.LTD</h2>
           <p>Empowering students with quality education and digital resources for academic excellence.</p>
         </div>
 
@@ -79,9 +79,9 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="footer-bottom-container">
-          <p className="copyright">© 2026 Kaurahub. All rights reserved.</p>
-          <p className="batch-info">CSE Department - 2024 Batch</p>
-          <p className="creators">Created with <span className="heart-icon">💛</span> by Preetham Jain M | Purushotham K</p>
+          <p className="copyright">© 2026 EETIRP.LTD. All rights reserved.</p>
+          <p className="batch-info">CSE Department - 2026 Batch</p>
+          <p className="creators">Created with <span className="heart-icon">💛</span> by Kaurahub</p>
         </div>
       </div>
     </footer>
