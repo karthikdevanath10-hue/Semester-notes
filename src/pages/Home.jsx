@@ -8,7 +8,7 @@ import { Search, X, FileText, Download, Rocket, MapPin, Phone, Mail, Clock } fro
 const DEPARTMENTS = [
   { name: 'Computer Science', emoji: '💻', description: 'Core programming, algorithms, networks, and advanced computing materials.' },
   { name: 'Artificial Intelligence', emoji: '🧠', description: 'Machine learning models, neural networks, data analysis, and scripting.' },
-  { name: 'Computer Applications', emoji: '🖥️', description: 'Database management systems, software development, and web environments.' },
+
   { name: 'Civil Engineering', emoji: '🏗️', description: 'Structural engineering, building materials, surveying, and graphics.' },
   { name: 'Electrical Engineering', emoji: '⚡', description: 'Circuit analysis, AC/DC machines, electromagnetics, and basic electronics.' },
   { name: 'Mechanical Engineering', emoji: '⚙️', description: 'Thermodynamics, fluid mechanics, machine design, and steam turbines.' }
@@ -248,8 +248,8 @@ const Home = ({ onOpenLogin }) => {
           </div>
           <div className="departments-grid">
             {DEPARTMENTS.map((dept) => (
-              <div 
-                key={dept.name} 
+              <div
+                key={dept.name}
                 className="dept-card"
                 onClick={() => setSelectedDept(dept.name)}
               >
@@ -269,8 +269,8 @@ const Home = ({ onOpenLogin }) => {
           </div>
           <div className="semesters-grid">
             {SEMESTERS.map((sem) => (
-              <div 
-                key={sem} 
+              <div
+                key={sem}
                 className="sem-card"
                 onClick={() => setSelectedSem(sem)}
               >
