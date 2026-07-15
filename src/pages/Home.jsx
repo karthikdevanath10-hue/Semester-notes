@@ -386,9 +386,9 @@ const Home = ({ onOpenLogin }) => {
               </div>
               <div className="info-card-text">
                 <h3>Phone</h3>
-                <p>+91 8660954976</p>
-                <p>+91 8088487801</p>
-                <p>+91 7411490271</p>
+                <p><a href="tel:+918660954976">+91 8660954976</a></p>
+                <p><a href="tel:+918088487801">+91 8088487801</a></p>
+                <p><a href="tel:+917411490271">+91 7411490271</a></p>
               </div>
             </div>
 
@@ -399,7 +399,7 @@ const Home = ({ onOpenLogin }) => {
               </div>
               <div className="info-card-text">
                 <h3>Email</h3>
-                <p>eetirpltd@gmail.com</p>
+                <p><a href="mailto:eetirpltd@gmail.com">eetirpltd@gmail.com</a></p>
               </div>
             </div>
 

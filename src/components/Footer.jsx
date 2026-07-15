@@ -33,11 +33,15 @@ const Footer = () => {
           </div>
           <div className="footer-contact-item">
             <Phone size={16} className="footer-icon" />
-            <span>+91 8660954976<br />+91 8088487801<br />+91 7411490271</span>
+            <span>
+              <a href="tel:+918660954976">+91 8660954976</a><br />
+              <a href="tel:+918088487801">+91 8088487801</a><br />
+              <a href="tel:+917411490271">+91 7411490271</a>
+            </span>
           </div>
           <div className="footer-contact-item">
             <Mail size={16} className="footer-icon" />
-            <span>eetirpltd@gmail.com</span>
+            <span><a href="mailto:eetirpltd@gmail.com">eetirpltd@gmail.com</a></span>
           </div>
         </div>
 
