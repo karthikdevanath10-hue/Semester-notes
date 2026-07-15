@@ -1,53 +1,64 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import SubjectCard from '../components/SubjectCard';
-import { Search, Library, ArrowRight, X, FileText, ExternalLink, Download, Rocket, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { Search, X, FileText, Download, Rocket, MapPin, Phone, Mail, Clock } from 'lucide-react';
+
+const DEPARTMENTS = [
+  { name: 'Computer Science', emoji: '💻', description: 'Core programming, algorithms, networks, and advanced computing materials.' },
+  { name: 'Artificial Intelligence', emoji: '🧠', description: 'Machine learning models, neural networks, data analysis, and scripting.' },
+  { name: 'Computer Applications', emoji: '🖥️', description: 'Database management systems, software development, and web environments.' },
+  { name: 'Civil Engineering', emoji: '🏗️', description: 'Structural engineering, building materials, surveying, and graphics.' },
+  { name: 'Electrical Engineering', emoji: '⚡', description: 'Circuit analysis, AC/DC machines, electromagnetics, and basic electronics.' },
+  { name: 'Mechanical Engineering', emoji: '⚙️', description: 'Thermodynamics, fluid mechanics, machine design, and steam turbines.' }
+];
+
+const ALL_DEPARTMENTS = DEPARTMENTS.map(d => d.name);
 
 const SUBJECTS_DATA = [
-  // P-Cycle (Physics Cycle)
-  { title: 'Mathematics-I', emoji: '📐', description: 'Calculus, linear algebra, and basic differential equations.', semester: 'P-Cycle' },
-  { title: 'Engineering Physics', emoji: '⚛️', description: 'Engineering physics course covering lasers, fibers, and semiconductors.', semester: 'P-Cycle' },
-  { title: 'C Programming', emoji: '💻', description: 'Foundations of computer programming in C, covering data structures and syntax.', semester: 'P-Cycle' },
-  { title: 'Electrical Engineering (BEC)', emoji: '⚡', description: 'Introduction to AC/DC circuits, electromagnetic induction, and electrical machines.', semester: 'P-Cycle' },
-  { title: 'Civil Engineering', emoji: '🏗️', description: 'Basic concepts of structural analysis, construction materials, and surveying.', semester: 'P-Cycle' },
-  { title: 'Computer Aided Design (CAD)', emoji: '✍️', description: 'Introduction to engineering graphics, 2D drafting, and computer-aided design tools.', semester: 'P-Cycle' },
+  // P-Cycle (Physics Cycle - Common to all departments)
+  { title: 'Mathematics-I', emoji: '📐', description: 'Calculus, linear algebra, and basic differential equations.', semester: 'P-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'Engineering Physics', emoji: '⚛️', description: 'Engineering physics course covering lasers, fibers, and semiconductors.', semester: 'P-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'C Programming', emoji: '💻', description: 'Foundations of computer programming in C, covering data structures and syntax.', semester: 'P-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'Electrical Engineering (BEC)', emoji: '⚡', description: 'Introduction to AC/DC circuits, electromagnetic induction, and electrical machines.', semester: 'P-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'Civil Engineering', emoji: '🏗️', description: 'Basic concepts of structural analysis, construction materials, and surveying.', semester: 'P-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'Computer Aided Design (CAD)', emoji: '✍️', description: 'Introduction to engineering graphics, 2D drafting, and computer-aided design tools.', semester: 'P-Cycle', departments: ALL_DEPARTMENTS },
 
-  // E-Cycle (Chemistry Cycle)
-  { title: 'Mathematics-II', emoji: '📈', description: 'Vector calculus, numerical methods, and advanced calculus.', semester: 'E-Cycle' },
-  { title: 'Python Programming', emoji: '🐍', description: 'Introduction to Python, covering syntax, scripting, and problem-solving.', semester: 'E-Cycle' },
-  { title: 'Electronics Engineering', emoji: '🔌', description: 'Fundamentals of electronic components, diodes, transistors, and logic gates.', semester: 'E-Cycle' },
-  { title: 'Mechanical Engineering (MES)', emoji: '⚙️', description: 'Basics of thermodynamics, steam turbines, refrigeration, and machine design.', semester: 'E-Cycle' },
-  { title: 'Renewable Energy (RES)', emoji: '☀️', description: 'Study of solar energy, wind power, biomass, and other sustainable energy sources.', semester: 'E-Cycle' },
+  // E-Cycle (Chemistry Cycle - Common to all departments)
+  { title: 'Mathematics-II', emoji: '📈', description: 'Vector calculus, numerical methods, and advanced calculus.', semester: 'E-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'Python Programming', emoji: '🐍', description: 'Introduction to Python, covering syntax, scripting, and problem-solving.', semester: 'E-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'Electronics Engineering', emoji: '🔌', description: 'Fundamentals of electronic components, diodes, transistors, and logic gates.', semester: 'E-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'Mechanical Engineering (MES)', emoji: '⚙️', description: 'Basics of thermodynamics, steam turbines, refrigeration, and machine design.', semester: 'E-Cycle', departments: ALL_DEPARTMENTS },
+  { title: 'Renewable Energy (RES)', emoji: '☀️', description: 'Study of solar energy, wind power, biomass, and other sustainable energy sources.', semester: 'E-Cycle', departments: ALL_DEPARTMENTS },
 
   // Semester 3
-  { title: 'Data Structures', emoji: '📊', description: 'Linear and non-linear data structures: lists, stacks, queues, trees, graphs.', semester: 'Sem 3' },
-  { title: 'Computer Organization', emoji: '🖥️', description: 'Basic structure of computers, machine instructions, and ALU design.', semester: 'Sem 3' },
-  { title: 'Discrete Mathematics', emoji: '🧠', description: 'Set theory, logic, combinatorics, graph theory, and relations.', semester: 'Sem 3' },
+  { title: 'Data Structures', emoji: '📊', description: 'Linear and non-linear data structures: lists, stacks, queues, trees, graphs.', semester: 'Sem 3', departments: ['Computer Science'] },
+  { title: 'Computer Organization', emoji: '🖥️', description: 'Basic structure of computers, machine instructions, and ALU design.', semester: 'Sem 3', departments: ['Computer Science'] },
+  { title: 'Discrete Mathematics', emoji: '🧠', description: 'Set theory, logic, combinatorics, graph theory, and relations.', semester: 'Sem 3', departments: ['Computer Science'] },
 
   // Semester 4
-  { title: 'Java Programming', emoji: '☕', description: 'Advanced object-oriented programming concepts using the Java platform.', semester: 'Sem 4' },
-  { title: 'Algorithms (DAA)', emoji: '⚡', description: 'Algorithm design techniques, complexity analysis, and graph algorithms.', semester: 'Sem 4' },
-  { title: 'Operating Systems', emoji: '💿', description: 'Process management, memory management, file systems, and concurrency.', semester: 'Sem 4' },
+  { title: 'Java Programming', emoji: '☕', description: 'Advanced object-oriented programming concepts using the Java platform.', semester: 'Sem 4', departments: ['Computer Science'] },
+  { title: 'Algorithms (DAA)', emoji: '⚡', description: 'Algorithm design techniques, complexity analysis, and graph algorithms.', semester: 'Sem 4', departments: ['Computer Science'] },
+  { title: 'Operating Systems', emoji: '💿', description: 'Process management, memory management, file systems, and concurrency.', semester: 'Sem 4', departments: ['Computer Science'] },
 
   // Semester 5
-  { title: 'DBMS', emoji: '🗄️', description: 'Relational databases, SQL queries, normalization, and transaction control.', semester: 'Sem 5' },
-  { title: 'Computer Networks', emoji: '🌐', description: 'TCP/IP layers, routing algorithms, socket programming, and protocols.', semester: 'Sem 5' },
-  { title: 'Software Engineering', emoji: '📝', description: 'Software development lifecycles, UML modeling, testing, and agile.', semester: 'Sem 5' },
+  { title: 'DBMS', emoji: '🗄️', description: 'Relational databases, SQL queries, normalization, and transaction control.', semester: 'Sem 5', departments: ['Computer Science'] },
+  { title: 'Computer Networks', emoji: '🌐', description: 'TCP/IP layers, routing algorithms, socket programming, and protocols.', semester: 'Sem 5', departments: ['Computer Science'] },
+  { title: 'Software Engineering', emoji: '📝', description: 'Software development lifecycles, UML modeling, testing, and agile.', semester: 'Sem 5', departments: ['Computer Science'] },
 
   // Semester 6
-  { title: 'Web Development', emoji: '🕸️', description: 'Full-stack web applications, HTML, CSS, JavaScript, Node.js, and React.', semester: 'Sem 6' },
-  { title: 'Compiler Design', emoji: '⚙️', description: 'Lexical analysis, parsing, code generation, and optimization phases.', semester: 'Sem 6' },
-  { title: 'Machine Learning', emoji: '🤖', description: 'Supervised and unsupervised learning, regression, neural networks.', semester: 'Sem 6' },
+  { title: 'Web Development', emoji: '🕸️', description: 'Full-stack web applications, HTML, CSS, JavaScript, Node.js, and React.', semester: 'Sem 6', departments: ['Computer Science'] },
+  { title: 'Compiler Design', emoji: '⚙️', description: 'Lexical analysis, parsing, code generation, and optimization phases.', semester: 'Sem 6', departments: ['Computer Science'] },
+  { title: 'Machine Learning', emoji: '🤖', description: 'Supervised and unsupervised learning, regression, neural networks.', semester: 'Sem 6', departments: ['Computer Science'] },
 
   // Semester 7
-  { title: 'Information Security', emoji: '🔒', description: 'Cryptography, network security, threat modeling, and secure coding practices.', semester: 'Sem 7' },
-  { title: 'Cloud Computing', emoji: '☁️', description: 'Virtualization, cloud architectures, storage services, and serverless computing.', semester: 'Sem 7' },
+  { title: 'Information Security', emoji: '🔒', description: 'Cryptography, network security, threat modeling, and secure coding practices.', semester: 'Sem 7', departments: ['Computer Science'] },
+  { title: 'Cloud Computing', emoji: '☁️', description: 'Virtualization, cloud architectures, storage services, and serverless computing.', semester: 'Sem 7', departments: ['Computer Science'] },
 
   // Semester 8
-  { title: 'Deep Learning', emoji: '🧠', description: 'Artificial neural networks, CNNs, RNNs, and generative AI models.', semester: 'Sem 8' },
-  { title: 'Internet of Things', emoji: '🔌', description: 'Embedded systems, sensor networks, microcontrollers, and IoT protocols.', semester: 'Sem 8' }
+  { title: 'Deep Learning', emoji: '🧠', description: 'Artificial neural networks, CNNs, RNNs, and generative AI models.', semester: 'Sem 8', departments: ['Computer Science'] },
+  { title: 'Internet of Things', emoji: '🔌', description: 'Embedded systems, sensor networks, microcontrollers, and IoT protocols.', semester: 'Sem 8', departments: ['Computer Science'] }
 ];
 
 const SEMESTERS = ['P-Cycle', 'E-Cycle', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
@@ -73,8 +84,9 @@ const getDirectDownloadUrl = (url) => {
 };
 
 const Home = ({ onOpenLogin }) => {
-  const { currentUser, userRole } = useAuth();
-  const [selectedSemester, setSelectedSemester] = useState('P-Cycle');
+  const { currentUser } = useAuth();
+  const [selectedDept, setSelectedDept] = useState(null);
+  const [selectedSem, setSelectedSem] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -84,11 +96,18 @@ const Home = ({ onOpenLogin }) => {
   const [drawerSearch, setDrawerSearch] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
 
-  // Reset drawer search and selection when the drawer subject/category changes
+  // Reset navigation states when URL hash points to #departments
   useEffect(() => {
-    setDrawerSearch('');
-    setSelectedFiles([]);
-  }, [drawerData]);
+    const handleHashChange = () => {
+      if (window.location.hash === '#departments') {
+        setSelectedDept(null);
+        setSelectedSem(null);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   useEffect(() => {
     // Real-time Firestore subscription for notes
@@ -108,13 +127,14 @@ const Home = ({ onOpenLogin }) => {
     return unsubscribe;
   }, []);
 
-  // Filter subjects based on semester and search query
+  // Filter subjects based on department, semester, and search query
   const filteredSubjects = SUBJECTS_DATA.filter((subject) => {
-    const matchesSemester = subject.semester === selectedSemester;
+    const matchesDept = subject.departments && subject.departments.includes(selectedDept);
+    const matchesSemester = subject.semester === selectedSem;
     const matchesSearch =
       subject.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       subject.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSemester && matchesSearch;
+    return matchesDept && matchesSemester && matchesSearch;
   });
 
   // Get notes for a specific subject
@@ -128,7 +148,7 @@ const Home = ({ onOpenLogin }) => {
 
     notes.forEach((note) => {
       if (
-        note.semester === selectedSemester &&
+        note.semester === selectedSem &&
         note.subject.toLowerCase() === subjectTitle.toLowerCase()
       ) {
         subjectFiles[note.type].push({
@@ -195,64 +215,125 @@ const Home = ({ onOpenLogin }) => {
         </p>
       </header>
 
-      <section className="filter-section">
-        <div className="search-bar">
-          <Search className="search-icon" size={18} />
-          <input
-            type="text"
-            placeholder="Search subjects (e.g. Data Structures, Java)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <div className="semester-tabs">
-          {SEMESTERS.map((sem) => (
-            <button
-              key={sem}
-              className={`sem-tab ${selectedSemester === sem ? 'active' : ''}`}
-              onClick={() => setSelectedSemester(sem)}
-            >
-              {sem}
-            </button>
-          ))}
-        </div>
-      </section>
-
-      {selectedSemester !== 'P-Cycle' && selectedSemester !== 'E-Cycle' ? (
-        <div className="empty-state coming-soon-state" style={{ padding: '5rem 2rem' }}>
-          <div className="coming-soon-icon-wrapper" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '80px',
-            height: '80px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-            color: 'var(--accent-color)',
-            marginBottom: '1.5rem'
-          }}>
-            <Rocket size={40} className="coming-soon-icon" style={{ animation: 'bounce 2s infinite' }} />
-          </div>
-          <h2 style={{ fontSize: '1.75rem', fontWeight: '800', marginBottom: '0.75rem' }}>Coming Soon!</h2>
-          <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
-            We are currently onboarding and verifying academic materials. Semester notes for <strong>{selectedSemester}</strong> will be available soon!
-          </p>
-          <button
-            className="btn btn-secondary"
-            onClick={() => setSelectedSemester('P-Cycle')}
-            style={{ borderRadius: '20px', padding: '0.5rem 1.25rem' }}
-          >
-            Browse Active Cycles
+      {/* Conditional Breadcrumb Navigation */}
+      {(selectedDept || selectedSem) && (
+        <div className="breadcrumb-nav">
+          <button onClick={() => { setSelectedDept(null); setSelectedSem(null); }} className="breadcrumb-link">
+            Home
           </button>
+          {selectedDept && (
+            <>
+              <span className="breadcrumb-separator">/</span>
+              <button onClick={() => setSelectedSem(null)} className="breadcrumb-link">
+                {selectedDept}
+              </button>
+            </>
+          )}
+          {selectedSem && (
+            <>
+              <span className="breadcrumb-separator">/</span>
+              <span className="breadcrumb-current">{selectedSem}</span>
+            </>
+          )}
         </div>
-      ) : loading ? (
-        <div className="text-center" style={{ padding: '4rem 0', color: 'var(--text-secondary)' }}>
-          <div className="spinner">Syncing with Firestore...</div>
-        </div>
+      )}
+
+      {/* Explorer Content */}
+      {!selectedDept ? (
+        /* STEP 1: Select Department */
+        <section id="departments" className="landing-section" style={{ paddingTop: 0 }}>
+          <div className="section-header">
+            <h2>Departments</h2>
+            <p>Select your department to explore semester notes, question banks, and study resources.</p>
+          </div>
+          <div className="departments-grid">
+            {DEPARTMENTS.map((dept) => (
+              <div 
+                key={dept.name} 
+                className="dept-card"
+                onClick={() => setSelectedDept(dept.name)}
+              >
+                <div className="dept-icon-wrapper">{dept.emoji}</div>
+                <h3>{dept.name}</h3>
+                <p>{dept.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : !selectedSem ? (
+        /* STEP 2: Select Semester */
+        <section className="semesters-container">
+          <div className="section-header" style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <h2>{selectedDept}</h2>
+            <p>Select a semester or academic cycle to view mapped syllabus resources.</p>
+          </div>
+          <div className="semesters-grid">
+            {SEMESTERS.map((sem) => (
+              <div 
+                key={sem} 
+                className="sem-card"
+                onClick={() => setSelectedSem(sem)}
+              >
+                <div className="sem-card-icon">🎓</div>
+                <h3>{sem}</h3>
+                <p>Explore resources and notes mapped to {sem} of {selectedDept}.</p>
+              </div>
+            ))}
+          </div>
+        </section>
       ) : (
+        /* STEP 3: Select Subjects and show notes */
         <>
-          {filteredSubjects.length > 0 ? (
+          <div className="section-header" style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <h2>{selectedDept} - {selectedSem}</h2>
+            <p>Access notes, question banks, and PYQs verified by faculty.</p>
+          </div>
+
+          <section className="filter-section">
+            <div className="search-bar">
+              <Search className="search-icon" size={18} />
+              <input
+                type="text"
+                placeholder="Search subjects (e.g. Data Structures, Java)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </section>
+
+          {filteredSubjects.length === 0 ? (
+            /* Bouncing Rocket Coming Soon for empty subjects mapping */
+            <div className="empty-state coming-soon-state" style={{ padding: '5rem 2rem' }}>
+              <div className="coming-soon-icon-wrapper" style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '80px',
+                height: '80px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                color: 'var(--accent-color)',
+                marginBottom: '1.5rem'
+              }}>
+                <Rocket size={40} className="coming-soon-icon" style={{ animation: 'bounce 2s infinite' }} />
+              </div>
+              <h2 style={{ fontSize: '1.75rem', fontWeight: '800', marginBottom: '0.75rem' }}>Coming Soon!</h2>
+              <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
+                We are currently onboarding and verifying academic materials. Notes for <strong>{selectedDept} - {selectedSem}</strong> will be available soon!
+              </p>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setSelectedSem(null)}
+                style={{ borderRadius: '20px', padding: '0.5rem 1.25rem' }}
+              >
+                Go Back to Semester List
+              </button>
+            </div>
+          ) : loading ? (
+            <div className="text-center" style={{ padding: '4rem 0', color: 'var(--text-secondary)' }}>
+              <div className="spinner">Syncing with Firestore...</div>
+            </div>
+          ) : (
             <div className="subject-grid">
               {filteredSubjects.map((subject) => (
                 <SubjectCard
@@ -261,17 +342,13 @@ const Home = ({ onOpenLogin }) => {
                   files={getSubjectFiles(subject.title)}
                   isAuthenticated={!!currentUser}
                   onOpenLogin={onOpenLogin}
-                  onViewFiles={(subjectTitle, categoryName, fileList) =>
-                    setDrawerData({ subjectTitle, categoryName, files: fileList })
-                  }
+                  onViewFiles={(subjectTitle, categoryName, fileList) => {
+                    setDrawerSearch('');
+                    setSelectedFiles([]);
+                    setDrawerData({ subjectTitle, categoryName, files: fileList });
+                  }}
                 />
               ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <Library size={48} style={{ color: 'var(--text-muted)' }} />
-              <h3>No Subjects Found</h3>
-              <p>We couldn't find any subjects matching "{searchQuery}" in {selectedSemester}.</p>
             </div>
           )}
         </>
@@ -291,46 +368,6 @@ const Home = ({ onOpenLogin }) => {
           <div className="about-card">
             <h3>Verified Content</h3>
             <p>Every document uploaded to AcademiX undergoes verification by our core admin team and faculty assistants to ensure accuracy, alignment with current university guidelines, and high readability standards.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Departments Section */}
-      <section id="departments" className="landing-section">
-        <div className="section-header">
-          <h2>Departments</h2>
-          <p>We support various academic disciplines with resources mapped to their respective university syllabus guidelines.</p>
-        </div>
-        <div className="departments-grid">
-          <div className="dept-card">
-            <div className="dept-icon-wrapper">💻</div>
-            <h3>Computer Science</h3>
-            <p>Core programming, algorithms, networks, and advanced computing materials.</p>
-          </div>
-          <div className="dept-card">
-            <div className="dept-icon-wrapper">🧠</div>
-            <h3>Artificial Intelligence</h3>
-            <p>Machine learning models, neural networks, data analysis, and scripting.</p>
-          </div>
-          <div className="dept-card">
-            <div className="dept-icon-wrapper">🖥️</div>
-            <h3>Computer Applications</h3>
-            <p>Database management systems, software development, and web environments.</p>
-          </div>
-          <div className="dept-card">
-            <div className="dept-icon-wrapper">🏗️</div>
-            <h3>Civil Engineering</h3>
-            <p>Structural engineering, building materials, surveying, and graphics.</p>
-          </div>
-          <div className="dept-card">
-            <div className="dept-icon-wrapper">⚡</div>
-            <h3>Electrical Engineering</h3>
-            <p>Circuit analysis, AC/DC machines, electromagnetics, and basic electronics.</p>
-          </div>
-          <div className="dept-card">
-            <div className="dept-icon-wrapper">⚙️</div>
-            <h3>Mechanical Engineering</h3>
-            <p>Thermodynamics, fluid mechanics, machine design, and steam turbines.</p>
           </div>
         </div>
       </section>
@@ -422,7 +459,7 @@ const Home = ({ onOpenLogin }) => {
               } else {
                 alert(data.message || 'Something went wrong. Please try again.');
               }
-            } catch (error) {
+            } catch {
               alert('Error sending message. Please check your connection and try again.');
             } finally {
               submitButton.textContent = originalText;
