@@ -8,7 +8,7 @@ const Footer = () => {
 
         {/* Brand Column */}
         <div className="footer-column brand-column">
-          <h2>EETIRP.LTD</h2>
+          <h2>KAUR</h2>
           <p>Empowering students with quality education and digital resources for academic excellence.</p>
         </div>
 
