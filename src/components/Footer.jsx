@@ -1,7 +1,15 @@
-import React from 'react';
+
+import { Link } from 'react-router-dom';
 import { Globe, MapPin, Phone, Mail } from 'lucide-react';
 
 const Footer = () => {
+  const handleHomeClick = (e) => {
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -17,11 +25,10 @@ const Footer = () => {
         <div className="footer-column">
           <h3>Quick Links</h3>
           <ul className="footer-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About Us</a></li>
-            <li><a href="#departments">Departments</a></li>
-            <li><a href="#announcements">Announcements</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><Link to="/" onClick={handleHomeClick}>Home</Link></li>
+            <li><a href="/#about">About Us</a></li>
+            <li><a href="/#departments">Departments</a></li>
+            <li><a href="/#contact">Contact</a></li>
           </ul>
         </div>
 

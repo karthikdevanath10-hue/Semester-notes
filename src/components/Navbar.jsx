@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Sun, Moon, LogOut, LogIn, LayoutDashboard, Notebook, Menu, X } from 'lucide-react';
@@ -34,20 +34,28 @@ const Navbar = ({ onOpenLogin }) => {
     setMenuOpen(false);
   };
 
+  const handleHomeClick = (e) => {
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    setMenuOpen(false);
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <Link to="/" className="navbar-brand" onClick={handleLinkClick}>
+        <Link to="/" className="navbar-brand" onClick={handleHomeClick}>
           <Notebook size={24} className="brand-icon" style={{ color: 'var(--accent-color)' }} />
           <span>AcademiX</span>
         </Link>
 
         {/* Center Navigation Links for Desktop */}
         <div className="navbar-links">
-          <Link to="/" className="nav-link">Home</Link>
-          <a href="#about" className="nav-link">About Us</a>
-          <a href="#departments" className="nav-link">Departments</a>
-          <a href="#contact" className="nav-link">Contact</a>
+          <Link to="/" className="nav-link" onClick={handleHomeClick}>Home</Link>
+          <a href="/#about" className="nav-link">About Us</a>
+          <a href="/#departments" className="nav-link">Departments</a>
+          <a href="/#contact" className="nav-link">Contact</a>
         </div>
 
         <div className="navbar-actions">
@@ -102,10 +110,10 @@ const Navbar = ({ onOpenLogin }) => {
       {/* Mobile Menu Dropdown Panel */}
       {menuOpen && (
         <div className="mobile-menu-dropdown">
-          <Link to="/" className="mobile-nav-link" onClick={handleLinkClick}>Home</Link>
-          <a href="#about" className="mobile-nav-link" onClick={handleLinkClick}>About Us</a>
-          <a href="#departments" className="mobile-nav-link" onClick={handleLinkClick}>Departments</a>
-          <a href="#contact" className="mobile-nav-link" onClick={handleLinkClick}>Contact</a>
+          <Link to="/" className="mobile-nav-link" onClick={handleHomeClick}>Home</Link>
+          <a href="/#about" className="mobile-nav-link" onClick={handleLinkClick}>About Us</a>
+          <a href="/#departments" className="mobile-nav-link" onClick={handleLinkClick}>Departments</a>
+          <a href="/#contact" className="mobile-nav-link" onClick={handleLinkClick}>Contact</a>
         </div>
       )}
     </nav>
