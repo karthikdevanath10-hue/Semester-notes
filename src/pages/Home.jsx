@@ -33,32 +33,32 @@ const SUBJECTS_DATA = [
   { title: 'Renewable Energy (RES)', emoji: '☀️', description: 'Study of solar energy, wind power, biomass, and other sustainable energy sources.', semester: 'E-Cycle', departments: ALL_DEPARTMENTS },
 
   // Semester 3
-  { title: 'Data Structures', emoji: '📊', description: 'Linear and non-linear data structures: lists, stacks, queues, trees, graphs.', semester: 'Sem 3', departments: ['Computer Science'] },
-  { title: 'Computer Organization', emoji: '🖥️', description: 'Basic structure of computers, machine instructions, and ALU design.', semester: 'Sem 3', departments: ['Computer Science'] },
-  { title: 'Discrete Mathematics', emoji: '🧠', description: 'Set theory, logic, combinatorics, graph theory, and relations.', semester: 'Sem 3', departments: ['Computer Science'] },
+  { title: 'Data Structures', emoji: '📊', description: 'Linear and non-linear data structures: lists, stacks, queues, trees, graphs.', semester: 'Sem 3', departments: [] },
+  { title: 'Computer Organization', emoji: '🖥️', description: 'Basic structure of computers, machine instructions, and ALU design.', semester: 'Sem 3', departments: [] },
+  { title: 'Discrete Mathematics', emoji: '🧠', description: 'Set theory, logic, combinatorics, graph theory, and relations.', semester: 'Sem 3', departments: [] },
 
   // Semester 4
-  { title: 'Java Programming', emoji: '☕', description: 'Advanced object-oriented programming concepts using the Java platform.', semester: 'Sem 4', departments: ['Computer Science'] },
-  { title: 'Algorithms (DAA)', emoji: '⚡', description: 'Algorithm design techniques, complexity analysis, and graph algorithms.', semester: 'Sem 4', departments: ['Computer Science'] },
-  { title: 'Operating Systems', emoji: '💿', description: 'Process management, memory management, file systems, and concurrency.', semester: 'Sem 4', departments: ['Computer Science'] },
+  { title: 'Java Programming', emoji: '☕', description: 'Advanced object-oriented programming concepts using the Java platform.', semester: 'Sem 4', departments: [] },
+  { title: 'Algorithms (DAA)', emoji: '⚡', description: 'Algorithm design techniques, complexity analysis, and graph algorithms.', semester: 'Sem 4', departments: [] },
+  { title: 'Operating Systems', emoji: '💿', description: 'Process management, memory management, file systems, and concurrency.', semester: 'Sem 4', departments: [] },
 
   // Semester 5
-  { title: 'DBMS', emoji: '🗄️', description: 'Relational databases, SQL queries, normalization, and transaction control.', semester: 'Sem 5', departments: ['Computer Science'] },
-  { title: 'Computer Networks', emoji: '🌐', description: 'TCP/IP layers, routing algorithms, socket programming, and protocols.', semester: 'Sem 5', departments: ['Computer Science'] },
-  { title: 'Software Engineering', emoji: '📝', description: 'Software development lifecycles, UML modeling, testing, and agile.', semester: 'Sem 5', departments: ['Computer Science'] },
+  { title: 'DBMS', emoji: '🗄️', description: 'Relational databases, SQL queries, normalization, and transaction control.', semester: 'Sem 5', departments: [] },
+  { title: 'Computer Networks', emoji: '🌐', description: 'TCP/IP layers, routing algorithms, socket programming, and protocols.', semester: 'Sem 5', departments: [] },
+  { title: 'Software Engineering', emoji: '📝', description: 'Software development lifecycles, UML modeling, testing, and agile.', semester: 'Sem 5', departments: [] },
 
   // Semester 6
-  { title: 'Web Development', emoji: '🕸️', description: 'Full-stack web applications, HTML, CSS, JavaScript, Node.js, and React.', semester: 'Sem 6', departments: ['Computer Science'] },
-  { title: 'Compiler Design', emoji: '⚙️', description: 'Lexical analysis, parsing, code generation, and optimization phases.', semester: 'Sem 6', departments: ['Computer Science'] },
-  { title: 'Machine Learning', emoji: '🤖', description: 'Supervised and unsupervised learning, regression, neural networks.', semester: 'Sem 6', departments: ['Computer Science'] },
+  { title: 'Web Development', emoji: '🕸️', description: 'Full-stack web applications, HTML, CSS, JavaScript, Node.js, and React.', semester: 'Sem 6', departments: [] },
+  { title: 'Compiler Design', emoji: '⚙️', description: 'Lexical analysis, parsing, code generation, and optimization phases.', semester: 'Sem 6', departments: [] },
+  { title: 'Machine Learning', emoji: '🤖', description: 'Supervised and unsupervised learning, regression, neural networks.', semester: 'Sem 6', departments: [] },
 
   // Semester 7
-  { title: 'Information Security', emoji: '🔒', description: 'Cryptography, network security, threat modeling, and secure coding practices.', semester: 'Sem 7', departments: ['Computer Science'] },
-  { title: 'Cloud Computing', emoji: '☁️', description: 'Virtualization, cloud architectures, storage services, and serverless computing.', semester: 'Sem 7', departments: ['Computer Science'] },
+  { title: 'Information Security', emoji: '🔒', description: 'Cryptography, network security, threat modeling, and secure coding practices.', semester: 'Sem 7', departments: [] },
+  { title: 'Cloud Computing', emoji: '☁️', description: 'Virtualization, cloud architectures, storage services, and serverless computing.', semester: 'Sem 7', departments: [] },
 
   // Semester 8
-  { title: 'Deep Learning', emoji: '🧠', description: 'Artificial neural networks, CNNs, RNNs, and generative AI models.', semester: 'Sem 8', departments: ['Computer Science'] },
-  { title: 'Internet of Things', emoji: '🔌', description: 'Embedded systems, sensor networks, microcontrollers, and IoT protocols.', semester: 'Sem 8', departments: ['Computer Science'] }
+  { title: 'Deep Learning', emoji: '🧠', description: 'Artificial neural networks, CNNs, RNNs, and generative AI models.', semester: 'Sem 8', departments: [] },
+  { title: 'Internet of Things', emoji: '🔌', description: 'Embedded systems, sensor networks, microcontrollers, and IoT protocols.', semester: 'Sem 8', departments: [] }
 ];
 
 const SEMESTERS = ['P-Cycle', 'E-Cycle', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
