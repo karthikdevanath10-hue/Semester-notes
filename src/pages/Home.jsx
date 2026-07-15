@@ -13,29 +13,29 @@ const SUBJECTS_DATA = [
   { title: 'Electrical Engineering (BEC)', emoji: '⚡', description: 'Introduction to AC/DC circuits, electromagnetic induction, and electrical machines.', semester: 'P-Cycle' },
   { title: 'Civil Engineering', emoji: '🏗️', description: 'Basic concepts of structural analysis, construction materials, and surveying.', semester: 'P-Cycle' },
   { title: 'Computer Aided Design (CAD)', emoji: '✍️', description: 'Introduction to engineering graphics, 2D drafting, and computer-aided design tools.', semester: 'P-Cycle' },
-  
+
   // E-Cycle (Chemistry Cycle)
   { title: 'Mathematics-II', emoji: '📈', description: 'Vector calculus, numerical methods, and advanced calculus.', semester: 'E-Cycle' },
   { title: 'Python Programming', emoji: '🐍', description: 'Introduction to Python, covering syntax, scripting, and problem-solving.', semester: 'E-Cycle' },
   { title: 'Electronics Engineering', emoji: '🔌', description: 'Fundamentals of electronic components, diodes, transistors, and logic gates.', semester: 'E-Cycle' },
   { title: 'Mechanical Engineering (MES)', emoji: '⚙️', description: 'Basics of thermodynamics, steam turbines, refrigeration, and machine design.', semester: 'E-Cycle' },
   { title: 'Renewable Energy (RES)', emoji: '☀️', description: 'Study of solar energy, wind power, biomass, and other sustainable energy sources.', semester: 'E-Cycle' },
-  
+
   // Semester 3
   { title: 'Data Structures', emoji: '📊', description: 'Linear and non-linear data structures: lists, stacks, queues, trees, graphs.', semester: 'Sem 3' },
   { title: 'Computer Organization', emoji: '🖥️', description: 'Basic structure of computers, machine instructions, and ALU design.', semester: 'Sem 3' },
   { title: 'Discrete Mathematics', emoji: '🧠', description: 'Set theory, logic, combinatorics, graph theory, and relations.', semester: 'Sem 3' },
-  
+
   // Semester 4
   { title: 'Java Programming', emoji: '☕', description: 'Advanced object-oriented programming concepts using the Java platform.', semester: 'Sem 4' },
   { title: 'Algorithms (DAA)', emoji: '⚡', description: 'Algorithm design techniques, complexity analysis, and graph algorithms.', semester: 'Sem 4' },
   { title: 'Operating Systems', emoji: '💿', description: 'Process management, memory management, file systems, and concurrency.', semester: 'Sem 4' },
-  
+
   // Semester 5
   { title: 'DBMS', emoji: '🗄️', description: 'Relational databases, SQL queries, normalization, and transaction control.', semester: 'Sem 5' },
   { title: 'Computer Networks', emoji: '🌐', description: 'TCP/IP layers, routing algorithms, socket programming, and protocols.', semester: 'Sem 5' },
   { title: 'Software Engineering', emoji: '📝', description: 'Software development lifecycles, UML modeling, testing, and agile.', semester: 'Sem 5' },
-  
+
   // Semester 6
   { title: 'Web Development', emoji: '🕸️', description: 'Full-stack web applications, HTML, CSS, JavaScript, Node.js, and React.', semester: 'Sem 6' },
   { title: 'Compiler Design', emoji: '⚙️', description: 'Lexical analysis, parsing, code generation, and optimization phases.', semester: 'Sem 6' },
@@ -78,7 +78,7 @@ const Home = ({ onOpenLogin }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Drawer States
   const [drawerData, setDrawerData] = useState(null); // { subjectTitle, categoryName, files: [] }
   const [drawerSearch, setDrawerSearch] = useState('');
@@ -111,7 +111,7 @@ const Home = ({ onOpenLogin }) => {
   // Filter subjects based on semester and search query
   const filteredSubjects = SUBJECTS_DATA.filter((subject) => {
     const matchesSemester = subject.semester === selectedSemester;
-    const matchesSearch = 
+    const matchesSearch =
       subject.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       subject.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSemester && matchesSearch;
@@ -120,7 +120,7 @@ const Home = ({ onOpenLogin }) => {
   // Get notes for a specific subject
   const getSubjectFiles = (subjectTitle) => {
     const subjectFiles = {};
-    
+
     // Pre-initialize empty arrays for all doc types
     ['Module Notes', 'Question Bank', 'PYQs'].forEach(type => {
       subjectFiles[type] = [];
@@ -148,9 +148,9 @@ const Home = ({ onOpenLogin }) => {
     : [];
 
   const handleToggleSelectFile = (fileUrl) => {
-    setSelectedFiles((prev) => 
-      prev.includes(fileUrl) 
-        ? prev.filter(url => url !== fileUrl) 
+    setSelectedFiles((prev) =>
+      prev.includes(fileUrl)
+        ? prev.filter(url => url !== fileUrl)
         : [...prev, fileUrl]
     );
   };
@@ -158,7 +158,7 @@ const Home = ({ onOpenLogin }) => {
   const handleToggleSelectAll = (filteredFiles) => {
     const filteredUrls = filteredFiles.map(f => f.fileUrl);
     const allSelected = filteredUrls.every(url => selectedFiles.includes(url));
-    
+
     if (allSelected) {
       setSelectedFiles(prev => prev.filter(url => !filteredUrls.includes(url)));
     } else {
@@ -171,7 +171,7 @@ const Home = ({ onOpenLogin }) => {
 
   const handleDownloadSelected = () => {
     if (selectedFiles.length === 0) return;
-    
+
     if (selectedFiles.length > 2) {
       alert('Your browser might ask for permission to open multiple tabs. Please allow popups to download all selected files.');
     }
@@ -198,9 +198,9 @@ const Home = ({ onOpenLogin }) => {
       <section className="filter-section">
         <div className="search-bar">
           <Search className="search-icon" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search subjects (e.g. Data Structures, Java)..." 
+          <input
+            type="text"
+            placeholder="Search subjects (e.g. Data Structures, Java)..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -221,16 +221,16 @@ const Home = ({ onOpenLogin }) => {
 
       {selectedSemester !== 'P-Cycle' && selectedSemester !== 'E-Cycle' ? (
         <div className="empty-state coming-soon-state" style={{ padding: '5rem 2rem' }}>
-          <div className="coming-soon-icon-wrapper" style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            width: '80px', 
-            height: '80px', 
-            borderRadius: '50%', 
-            backgroundColor: 'rgba(99, 102, 241, 0.1)', 
-            color: 'var(--accent-color)', 
-            marginBottom: '1.5rem' 
+          <div className="coming-soon-icon-wrapper" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            color: 'var(--accent-color)',
+            marginBottom: '1.5rem'
           }}>
             <Rocket size={40} className="coming-soon-icon" style={{ animation: 'bounce 2s infinite' }} />
           </div>
@@ -238,8 +238,8 @@ const Home = ({ onOpenLogin }) => {
           <p style={{ color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 1.5rem', lineHeight: '1.6' }}>
             We are currently onboarding and verifying academic materials. Semester notes for <strong>{selectedSemester}</strong> will be available soon!
           </p>
-          <button 
-            className="btn btn-secondary" 
+          <button
+            className="btn btn-secondary"
             onClick={() => setSelectedSemester('P-Cycle')}
             style={{ borderRadius: '20px', padding: '0.5rem 1.25rem' }}
           >
@@ -261,7 +261,7 @@ const Home = ({ onOpenLogin }) => {
                   files={getSubjectFiles(subject.title)}
                   isAuthenticated={!!currentUser}
                   onOpenLogin={onOpenLogin}
-                  onViewFiles={(subjectTitle, categoryName, fileList) => 
+                  onViewFiles={(subjectTitle, categoryName, fileList) =>
                     setDrawerData({ subjectTitle, categoryName, files: fileList })
                   }
                 />
@@ -361,11 +361,11 @@ const Home = ({ onOpenLogin }) => {
           <h2>Contact Us</h2>
           <p>Have suggestions, feedback, or notes to contribute? We'd love to hear from you.</p>
         </div>
-        
+
         <div className="contact-container">
           {/* Left Info Columns */}
           <div className="contact-info-column">
-            
+
             {/* Address Card */}
             <div className="contact-info-card">
               <div className="info-icon-wrapper">
@@ -450,7 +450,7 @@ const Home = ({ onOpenLogin }) => {
             }
           }}>
             <h2>Send us a Message</h2>
-            
+
             <div className="form-row-two-col">
               <div className="form-group">
                 <label>Full Name *</label>
@@ -469,7 +469,7 @@ const Home = ({ onOpenLogin }) => {
               </div>
               <div className="form-group">
                 <label>Subject *</label>
-                <input type="text" name="subject" placeholder="Admission Inquiry" required />
+                <input type="text" name="subject" placeholder="Suggestion's" required />
               </div>
             </div>
 
@@ -520,8 +520,8 @@ const Home = ({ onOpenLogin }) => {
                   />
                   <span>Select All</span>
                 </label>
-                
-                <button 
+
+                <button
                   className="btn btn-primary btn-sm btn-download-all"
                   onClick={handleDownloadSelected}
                   disabled={selectedFiles.length === 0}
@@ -543,7 +543,7 @@ const Home = ({ onOpenLogin }) => {
                         checked={selectedFiles.includes(file.fileUrl)}
                         onChange={() => handleToggleSelectFile(file.fileUrl)}
                       />
-                      
+
                       <a
                         href={file.fileUrl}
                         target="_blank"
