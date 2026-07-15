@@ -8,8 +8,9 @@ const Footer = () => {
 
         {/* Brand Column */}
         <div className="footer-column brand-column">
-          <h2>KAUR</h2>
-          <p>Empowering students with quality education and digital resources for academic excellence.</p>
+          <h2>KAURAHUB</h2>
+          <p>KAURAHUB is a student-focused learning ecosystem developed under EETIRP LTD with the vision of providing modern educational solutions through one unified platform.</p>
+          <p style={{ marginTop: '0.75rem' }}>Our mission is to bridge the gap between academics and industry by offering placement preparation, programming education, aptitude training, resume building and semester learning resources.</p>
         </div>
 
         {/* Quick Links Column */}
