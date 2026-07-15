@@ -335,26 +335,6 @@ const Home = ({ onOpenLogin }) => {
         </div>
       </section>
 
-      {/* Announcements Section */}
-      <section id="announcements" className="landing-section">
-        <div className="section-header">
-          <h2>Announcements</h2>
-          <p>Stay up to date with recent syllabus changes, upload schedules, and notifications.</p>
-        </div>
-        <div className="announcements-container">
-          <div className="announcement-item">
-            <span className="announcement-date">July 2026</span>
-            <h4>Syllabus Realignment</h4>
-            <p>All Physics Cycle (P-Cycle) and Chemistry Cycle (E-Cycle) notes have been successfully updated to match the latest academic year guidelines.</p>
-          </div>
-          <div className="announcement-item">
-            <span className="announcement-date">June 2026</span>
-            <h4>Semester 3 Notes Launch</h4>
-            <p>Verified notes and previous year question papers (PYQs) for Data Structures, Computer Organization, and Discrete Mathematics are now fully live!</p>
-          </div>
-        </div>
-      </section>
-
       {/* Contact Section */}
       <section id="contact" className="landing-section">
         <div className="section-header">

@@ -47,13 +47,12 @@ const Navbar = ({ onOpenLogin }) => {
           <Link to="/" className="nav-link">Home</Link>
           <a href="#about" className="nav-link">About Us</a>
           <a href="#departments" className="nav-link">Departments</a>
-          <a href="#announcements" className="nav-link">Announcements</a>
           <a href="#contact" className="nav-link">Contact</a>
         </div>
 
         <div className="navbar-actions">
-          <button 
-            className="theme-toggle-btn" 
+          <button
+            className="theme-toggle-btn"
             onClick={toggleTheme}
             aria-label="Toggle theme"
             title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Mode`}
@@ -69,7 +68,7 @@ const Navbar = ({ onOpenLogin }) => {
                   <span>Admin Panel</span>
                 </Link>
               )}
-              
+
               <div className="user-nav-badge">
                 <span className="user-nav-badge-name">{userData?.name || 'User'}</span>
                 <span className="user-nav-badge-role">
@@ -90,8 +89,8 @@ const Navbar = ({ onOpenLogin }) => {
           )}
 
           {/* Mobile Menu Toggle Button */}
-          <button 
-            className="mobile-menu-btn" 
+          <button
+            className="mobile-menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
           >
@@ -106,7 +105,6 @@ const Navbar = ({ onOpenLogin }) => {
           <Link to="/" className="mobile-nav-link" onClick={handleLinkClick}>Home</Link>
           <a href="#about" className="mobile-nav-link" onClick={handleLinkClick}>About Us</a>
           <a href="#departments" className="mobile-nav-link" onClick={handleLinkClick}>Departments</a>
-          <a href="#announcements" className="mobile-nav-link" onClick={handleLinkClick}>Announcements</a>
           <a href="#contact" className="mobile-nav-link" onClick={handleLinkClick}>Contact</a>
         </div>
       )}
