@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { collection, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import SubjectCard from '../components/SubjectCard';
-import { Search, X, FileText, Download, Rocket, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { Search, X, FileText, Download, Rocket, MapPin, Phone, Mail, Clock, Library } from 'lucide-react';
 
 const DEPARTMENTS = [
   { name: 'Computer Science', emoji: '💻', description: 'Core programming, algorithms, networks, and advanced computing materials.' },
@@ -88,6 +88,7 @@ const Home = ({ onOpenLogin }) => {
   const [selectedDept, setSelectedDept] = useState(null);
   const [selectedSem, setSelectedSem] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deptSearchQuery, setDeptSearchQuery] = useState('');
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -102,6 +103,7 @@ const Home = ({ onOpenLogin }) => {
       if (window.location.hash === '#departments') {
         setSelectedDept(null);
         setSelectedSem(null);
+        setDeptSearchQuery('');
       }
     };
 
@@ -136,6 +138,12 @@ const Home = ({ onOpenLogin }) => {
       subject.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesDept && matchesSemester && matchesSearch;
   });
+
+  // Filter departments based on search query
+  const filteredDepts = DEPARTMENTS.filter((dept) =>
+    dept.name.toLowerCase().includes(deptSearchQuery.toLowerCase()) ||
+    dept.description.toLowerCase().includes(deptSearchQuery.toLowerCase())
+  );
 
   // Get notes for a specific subject
   const getSubjectFiles = (subjectTitle) => {
@@ -218,7 +226,7 @@ const Home = ({ onOpenLogin }) => {
       {/* Conditional Breadcrumb Navigation */}
       {(selectedDept || selectedSem) && (
         <div className="breadcrumb-nav">
-          <button onClick={() => { setSelectedDept(null); setSelectedSem(null); }} className="breadcrumb-link">
+          <button onClick={() => { setSelectedDept(null); setSelectedSem(null); setDeptSearchQuery(''); }} className="breadcrumb-link">
             Home
           </button>
           {selectedDept && (
@@ -246,19 +254,40 @@ const Home = ({ onOpenLogin }) => {
             <h2>Departments</h2>
             <p>Select your department to explore semester notes, question banks, and study resources.</p>
           </div>
-          <div className="departments-grid">
-            {DEPARTMENTS.map((dept) => (
-              <div
-                key={dept.name}
-                className="dept-card"
-                onClick={() => setSelectedDept(dept.name)}
-              >
-                <div className="dept-icon-wrapper">{dept.emoji}</div>
-                <h3>{dept.name}</h3>
-                <p>{dept.description}</p>
-              </div>
-            ))}
+
+          <div className="dept-filter-section" style={{ display: 'flex', justifyContent: 'center', marginBottom: '2.5rem' }}>
+            <div className="search-bar" style={{ maxWidth: '480px', width: '100%', margin: 0 }}>
+              <Search className="search-icon" size={18} />
+              <input
+                type="text"
+                placeholder="Search departments..."
+                value={deptSearchQuery}
+                onChange={(e) => setDeptSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
+
+          {filteredDepts.length === 0 ? (
+            <div className="empty-state" style={{ padding: '3rem 2rem' }}>
+              <Library size={40} style={{ color: 'var(--text-muted)' }} />
+              <h3>No Departments Found</h3>
+              <p>We couldn't find any departments matching "{deptSearchQuery}".</p>
+            </div>
+          ) : (
+            <div className="departments-grid">
+              {filteredDepts.map((dept) => (
+                <div 
+                  key={dept.name} 
+                  className="dept-card"
+                  onClick={() => { setSelectedDept(dept.name); setDeptSearchQuery(''); }}
+                >
+                  <div className="dept-icon-wrapper">{dept.emoji}</div>
+                  <h3>{dept.name}</h3>
+                  <p>{dept.description}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       ) : !selectedSem ? (
         /* STEP 2: Select Semester */
