@@ -419,38 +419,63 @@ const Home = ({ onOpenLogin }) => {
           </div>
 
           {/* Right Form Card */}
-          <form className="contact-form-card" onSubmit={(e) => {
+          <form className="contact-form-card" onSubmit={async (e) => {
             e.preventDefault();
-            alert('Thank you for your message! We will get back to you shortly.');
-            e.target.reset();
+            const submitButton = e.target.querySelector('.btn-submit-message');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Sending...';
+            submitButton.disabled = true;
+
+            const formData = new FormData(e.target);
+            const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "YOUR_ACCESS_KEY_HERE";
+            formData.append("access_key", accessKey);
+
+            try {
+              const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                body: formData
+              });
+              const data = await response.json();
+              if (data.success) {
+                alert('Thank you for your message! We will get back to you shortly.');
+                e.target.reset();
+              } else {
+                alert(data.message || 'Something went wrong. Please try again.');
+              }
+            } catch (error) {
+              alert('Error sending message. Please check your connection and try again.');
+            } finally {
+              submitButton.textContent = originalText;
+              submitButton.disabled = false;
+            }
           }}>
             <h2>Send us a Message</h2>
             
             <div className="form-row-two-col">
               <div className="form-group">
                 <label>Full Name *</label>
-                <input type="text" placeholder="John Doe" required />
+                <input type="text" name="name" placeholder="John Doe" required />
               </div>
               <div className="form-group">
                 <label>Email Address *</label>
-                <input type="email" placeholder="john@example.com" required />
+                <input type="email" name="email" placeholder="john@example.com" required />
               </div>
             </div>
 
             <div className="form-row-two-col">
               <div className="form-group">
                 <label>Phone Number</label>
-                <input type="tel" placeholder="+91 98765 43210" />
+                <input type="tel" name="phone" placeholder="+91 98765 43210" />
               </div>
               <div className="form-group">
                 <label>Subject *</label>
-                <input type="text" placeholder="Admission Inquiry" required />
+                <input type="text" name="subject" placeholder="Admission Inquiry" required />
               </div>
             </div>
 
             <div className="form-group">
               <label>Message *</label>
-              <textarea placeholder="Tell us how we can help you..." rows={5} required></textarea>
+              <textarea name="message" placeholder="Tell us how we can help you..." rows={5} required></textarea>
             </div>
 
             <button type="submit" className="btn btn-primary btn-submit-message">
