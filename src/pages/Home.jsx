@@ -163,10 +163,22 @@ const Home = ({ onOpenLogin }) => {
           id: note.id,
           fileName: note.fileName,
           fileUrl: note.fileUrl,
-          createdAt: note.createdAt
+          createdAt: note.createdAt,
+          sortOrder: note.sortOrder !== undefined ? note.sortOrder : 0
         });
       }
     });
+
+    // Sort each category by sortOrder ascending, fallback to createdAt ascending
+    ['Module Notes', 'Question Bank', 'PYQs'].forEach(type => {
+      subjectFiles[type].sort((a, b) => {
+        const orderA = a.sortOrder;
+        const orderB = b.sortOrder;
+        if (orderA !== orderB) return orderA - orderB;
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
+    });
+
     return subjectFiles;
   };
 

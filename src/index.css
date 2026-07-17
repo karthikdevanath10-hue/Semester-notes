@@ -2192,3 +2192,40 @@ body {
 .btn-success:hover {
   filter: brightness(0.9);
 }
+
+/* Reordering buttons & banners */
+.btn-reorder {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  transition: all var(--transition-speed) ease;
+}
+
+.btn-reorder:hover:not(:disabled) {
+  background-color: var(--accent-light);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.btn-reorder:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.reorder-tip {
+  background-color: var(--accent-light);
+  color: var(--text-primary);
+  border-left: 4px solid var(--accent-color);
+  padding: 0.85rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}

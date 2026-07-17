@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase/config';
 import { collection, addDoc, query, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { UploadCloud, Trash2, FileText, CheckCircle2, AlertCircle, FileSpreadsheet, Link2 } from 'lucide-react';
+import { UploadCloud, Trash2, FileText, CheckCircle2, AlertCircle, FileSpreadsheet, Link2, ChevronUp, ChevronDown } from 'lucide-react';
 
 const SEMESTERS = ['P-Cycle', 'E-Cycle', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
 
@@ -44,6 +44,14 @@ const AdminDashboard = () => {
   const [notes, setNotes] = useState([]);
   const [loadingFiles, setLoadingFiles] = useState(true);
   const [filterSemester, setFilterSemester] = useState('All');
+  const [filterSubject, setFilterSubject] = useState('All');
+  const [filterType, setFilterType] = useState('All');
+
+  // Reset subject and category filters when semester filter changes
+  useEffect(() => {
+    setFilterSubject('All');
+    setFilterType('All');
+  }, [filterSemester]);
 
   // Sync subject selection when semester changes
   useEffect(() => {
@@ -58,8 +66,13 @@ const AdminDashboard = () => {
       snapshot.forEach((doc) => {
         list.push({ id: doc.id, ...doc.data() });
       });
-      // Sort by upload time desc
-      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      // Sort by sortOrder asc, fallback to createdAt asc
+      list.sort((a, b) => {
+        const orderA = a.sortOrder !== undefined ? a.sortOrder : 0;
+        const orderB = b.sortOrder !== undefined ? b.sortOrder : 0;
+        if (orderA !== orderB) return orderA - orderB;
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      });
       setNotes(list);
       setLoadingFiles(false);
     }, (err) => {
@@ -93,6 +106,14 @@ const AdminDashboard = () => {
 
     setUploading(true);
     
+    // Get all existing notes in this category to calculate the next sortOrder
+    const sameCategoryNotes = notes.filter(n => 
+      n.semester === semester && 
+      n.subject === subject && 
+      n.type === docType
+    );
+    const nextSortOrder = sameCategoryNotes.length;
+    
     try {
       // Save metadata doc in firestore
       await addDoc(collection(db, 'notes'), {
@@ -103,7 +124,8 @@ const AdminDashboard = () => {
         fileUrl: fileUrl.trim(),
         storagePath: '',
         uploadedBy: userData?.name || 'Admin',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        sortOrder: nextSortOrder
       });
 
       setSuccessMsg(`"${fileName}" added successfully!`);
@@ -192,13 +214,39 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error('Error deleting user:', err);
       alert('Failed to remove student.');
+    } finally {
+      setLoadingFiles(false);
+    }
+  };
+
+  const handleMoveNote = async (note, direction, index) => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= displayedNotes.length) return;
+
+    const currentNote = note;
+    const siblingNote = displayedNotes[targetIndex];
+
+    try {
+      // Assign explicit indexes in the current list as the new sortOrder
+      await Promise.all([
+        updateDoc(doc(db, 'notes', currentNote.id), { sortOrder: targetIndex }),
+        updateDoc(doc(db, 'notes', siblingNote.id), { sortOrder: index })
+      ]);
+    } catch (err) {
+      console.error('Error reordering notes:', err);
+      alert('Failed to update note order.');
     }
   };
 
   // Filter notes in table
-  const displayedNotes = filterSemester === 'All' 
-    ? notes 
-    : notes.filter(n => n.semester === filterSemester);
+  const displayedNotes = notes.filter(note => {
+    const semMatch = filterSemester === 'All' || note.semester === filterSemester;
+    const subMatch = filterSubject === 'All' || note.subject.toLowerCase() === filterSubject.toLowerCase();
+    const typeMatch = filterType === 'All' || note.type === filterType;
+    return semMatch && subMatch && typeMatch;
+  });
+
+  const canReorder = filterSemester !== 'All' && filterSubject !== 'All' && filterType !== 'All';
 
   return (
     <div className="main-content">
@@ -342,8 +390,10 @@ const AdminDashboard = () => {
               </h2>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Filter:</span>
+                  
+                  {/* Semester Filter */}
                   <select 
                     value={filterSemester} 
                     onChange={(e) => setFilterSemester(e.target.value)}
@@ -352,6 +402,34 @@ const AdminDashboard = () => {
                     <option value="All">All Semesters</option>
                     {SEMESTERS.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
+
+                  {/* Subject Filter (Enabled only when a semester is selected) */}
+                  {filterSemester !== 'All' && (
+                    <select
+                      value={filterSubject}
+                      onChange={(e) => setFilterSubject(e.target.value)}
+                      style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                    >
+                      <option value="All">All Subjects</option>
+                      {SUBJECTS_BY_SEM[filterSemester].map(sub => (
+                        <option key={sub} value={sub}>{sub}</option>
+                      ))}
+                    </select>
+                  )}
+
+                  {/* Category Filter (Enabled only when a semester is selected) */}
+                  {filterSemester !== 'All' && (
+                    <select
+                      value={filterType}
+                      onChange={(e) => setFilterType(e.target.value)}
+                      style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                    >
+                      <option value="All">All Categories</option>
+                      {['Module Notes', 'Question Bank', 'PYQs'].map(t => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
                 <button 
@@ -365,6 +443,12 @@ const AdminDashboard = () => {
               </div>
             </div>
 
+            {!canReorder && (
+              <div className="reorder-tip">
+                💡 <strong>Tip:</strong> Select a specific <strong>Semester</strong>, <strong>Subject</strong>, and <strong>Category</strong> filter above to enable Up/Down arrows and arrange the PDFs in your desired order.
+              </div>
+            )}
+
             {loadingFiles ? (
               <div className="text-center" style={{ padding: '3rem 0', color: 'var(--text-secondary)' }}>
                 Loading files list...
@@ -374,6 +458,7 @@ const AdminDashboard = () => {
                 <table className="data-table">
                   <thead>
                     <tr>
+                      {canReorder && <th style={{ textAlign: 'center', width: '90px' }}>Order</th>}
                       <th>File Name</th>
                       <th>Semester</th>
                       <th>Subject</th>
@@ -382,8 +467,32 @@ const AdminDashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {displayedNotes.map((note) => (
+                    {displayedNotes.map((note, idx) => (
                       <tr key={note.id}>
+                        {canReorder && (
+                          <td style={{ textAlign: 'center' }}>
+                            <div style={{ display: 'flex', gap: '0.25rem', justifyContent: 'center' }}>
+                              <button
+                                type="button"
+                                className="btn-reorder"
+                                onClick={() => handleMoveNote(note, 'up', idx)}
+                                disabled={idx === 0}
+                                title="Move Up"
+                              >
+                                <ChevronUp size={16} />
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-reorder"
+                                onClick={() => handleMoveNote(note, 'down', idx)}
+                                disabled={idx === displayedNotes.length - 1}
+                                title="Move Down"
+                              >
+                                <ChevronDown size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        )}
                         <td>
                           <div className="file-name-cell" title={note.fileName}>
                             {note.fileName.length > 30 ? `${note.fileName.substring(0, 27)}...` : note.fileName}
