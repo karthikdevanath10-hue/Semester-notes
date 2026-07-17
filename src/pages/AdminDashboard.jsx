@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase/config';
-import { collection, addDoc, query, onSnapshot, doc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, query, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { UploadCloud, Trash2, FileText, CheckCircle2, AlertCircle, FileSpreadsheet, Link2 } from 'lucide-react';
 
 const SEMESTERS = ['P-Cycle', 'E-Cycle', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
@@ -22,6 +22,12 @@ const DOC_TYPES = ['Module Notes', 'Question Bank', 'PYQs'];
 const AdminDashboard = () => {
   const { userData } = useAuth();
   
+  // Tab & Directory States
+  const [activeTab, setActiveTab] = useState('uploads'); // 'uploads' or 'students'
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Form States
   const [semester, setSemester] = useState('P-Cycle');
   const [subject, setSubject] = useState(SUBJECTS_BY_SEM['P-Cycle'][0]);
@@ -142,6 +148,53 @@ const AdminDashboard = () => {
     }
   };
 
+  // Real-time listener for users table
+  useEffect(() => {
+    const q = query(collection(db, 'users'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const list = [];
+      snapshot.forEach((doc) => {
+        list.push({ id: doc.id, ...doc.data() });
+      });
+      setUsers(list);
+      setLoadingUsers(false);
+    }, (err) => {
+      console.error('Error fetching users:', err);
+      setLoadingUsers(false);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  const handleToggleSuspendUser = async (user) => {
+    const isSuspended = user.suspended || false;
+    const confirmAction = window.confirm(`Are you sure you want to ${isSuspended ? 'unsuspend' : 'suspend'} student "${user.name}"?`);
+    if (!confirmAction) return;
+
+    try {
+      await updateDoc(doc(db, 'users', user.uid), {
+        suspended: !isSuspended
+      });
+      alert(`Student "${user.name}" has been successfully ${isSuspended ? 'unsuspended' : 'suspended'}.`);
+    } catch (err) {
+      console.error('Error updating user status:', err);
+      alert('Failed to update student status.');
+    }
+  };
+
+  const handleRemoveUser = async (user) => {
+    const confirmDelete = window.confirm(`WARNING: Are you sure you want to permanently delete the profile of student "${user.name}" (USN: ${user.usn || 'N/A'})? This will remove their registration from the database.`);
+    if (!confirmDelete) return;
+
+    try {
+      await deleteDoc(doc(db, 'users', user.uid));
+      alert(`Student "${user.name}" has been successfully removed.`);
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      alert('Failed to remove student.');
+    }
+  };
+
   // Filter notes in table
   const displayedNotes = filterSemester === 'All' 
     ? notes 
@@ -152,7 +205,7 @@ const AdminDashboard = () => {
       <header className="admin-header">
         <div>
           <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Faculty Control Center</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Manage course resources, upload lecture sheets, and PYQs.</p>
+          <p style={{ color: 'var(--text-secondary)' }}>Manage course resources, user accounts, and system data.</p>
         </div>
         <div className="user-badge" style={{ backgroundColor: 'var(--accent-light)' }}>
           <span className="user-badge-name" style={{ color: 'var(--accent-color)', fontWeight: 700 }}>
@@ -162,197 +215,318 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      <div className="admin-panes">
-        {/* Left Pane: Upload Tool */}
-        <section className="admin-pane">
-          <h2 className="admin-pane-title">
-            <UploadCloud size={20} style={{ color: 'var(--accent-color)' }} />
-            Upload Document
-          </h2>
+      {/* Tabs Navigation */}
+      <div className="admin-tabs">
+        <button 
+          className={`admin-tab ${activeTab === 'uploads' ? 'active' : ''}`}
+          onClick={() => setActiveTab('uploads')}
+        >
+          Resource Manager
+        </button>
+        <button 
+          className={`admin-tab ${activeTab === 'students' ? 'active' : ''}`}
+          onClick={() => setActiveTab('students')}
+        >
+          Student Directory
+        </button>
+      </div>
 
-          {successMsg && (
-            <div className="error-message" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'var(--success-color)', color: 'var(--success-color)' }}>
-              <CheckCircle2 size={16} />
-              <span>{successMsg}</span>
-            </div>
-          )}
-
-          {errorMsg && (
-            <div className="error-message">
-              <AlertCircle size={16} />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleUploadSubmit}>
-            <div className="form-group">
-              <label htmlFor="semester">Semester</label>
-              <select 
-                id="semester" 
-                value={semester} 
-                onChange={(e) => setSemester(e.target.value)}
-                disabled={uploading}
-              >
-                {SEMESTERS.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="subject">Subject</label>
-              <select 
-                id="subject" 
-                value={subject} 
-                onChange={(e) => setSubject(e.target.value)}
-                disabled={uploading}
-              >
-                {SUBJECTS_BY_SEM[semester].map(sub => (
-                  <option key={sub} value={sub}>{sub}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="docType">Document Type</label>
-              <select 
-                id="docType" 
-                value={docType} 
-                onChange={(e) => setDocType(e.target.value)}
-                disabled={uploading}
-              >
-                {DOC_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="fileName">Display File Name</label>
-              <input 
-                type="text" 
-                id="fileName"
-                placeholder="e.g. Unit 1 Introduction to C"
-                value={fileName}
-                onChange={(e) => setFileName(e.target.value)}
-                disabled={uploading}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="fileUrl">Document Link (Google Drive, Dropbox, etc.)</label>
-              <div style={{ position: 'relative' }}>
-                <input 
-                  type="url" 
-                  id="fileUrl"
-                  placeholder="https://drive.google.com/..."
-                  value={fileUrl}
-                  onChange={(e) => setFileUrl(e.target.value)}
-                  disabled={uploading}
-                  style={{ paddingLeft: '2.5rem' }}
-                  required
-                />
-                <Link2 size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
-              </div>
-            </div>
-
-            <button 
-              type="submit" 
-              className="btn btn-primary w-full"
-              disabled={uploading}
-            >
-              {uploading ? 'Saving Link...' : 'Save Document Link'}
-            </button>
-          </form>
-        </section>
-
-        {/* Right Pane: File Manager */}
-        <section className="admin-pane" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <h2 className="admin-pane-title" style={{ marginBottom: 0 }}>
-              <FileSpreadsheet size={20} style={{ color: 'var(--accent-color)' }} />
-              File Manager
+      {activeTab === 'uploads' && (
+        <div className="admin-panes">
+          {/* Left Pane: Upload Tool */}
+          <section className="admin-pane">
+            <h2 className="admin-pane-title">
+              <UploadCloud size={20} style={{ color: 'var(--accent-color)' }} />
+              Upload Document
             </h2>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Filter:</span>
+            {successMsg && (
+              <div className="error-message" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'var(--success-color)', color: 'var(--success-color)' }}>
+                <CheckCircle2 size={16} />
+                <span>{successMsg}</span>
+              </div>
+            )}
+
+            {errorMsg && (
+              <div className="error-message">
+                <AlertCircle size={16} />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleUploadSubmit}>
+              <div className="form-group">
+                <label htmlFor="semester">Semester</label>
                 <select 
-                  value={filterSemester} 
-                  onChange={(e) => setFilterSemester(e.target.value)}
-                  style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                  id="semester" 
+                  value={semester} 
+                  onChange={(e) => setSemester(e.target.value)}
+                  disabled={uploading}
                 >
-                  <option value="All">All Semesters</option>
                   {SEMESTERS.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
 
+              <div className="form-group">
+                <label htmlFor="subject">Subject</label>
+                <select 
+                  id="subject" 
+                  value={subject} 
+                  onChange={(e) => setSubject(e.target.value)}
+                  disabled={uploading}
+                >
+                  {SUBJECTS_BY_SEM[semester].map(sub => (
+                    <option key={sub} value={sub}>{sub}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="docType">Document Type</label>
+                <select 
+                  id="docType" 
+                  value={docType} 
+                  onChange={(e) => setDocType(e.target.value)}
+                  disabled={uploading}
+                >
+                  {DOC_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="fileName">Display File Name</label>
+                <input 
+                  type="text" 
+                  id="fileName"
+                  placeholder="e.g. Unit 1 Introduction to C"
+                  value={fileName}
+                  onChange={(e) => setFileName(e.target.value)}
+                  disabled={uploading}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="fileUrl">Document Link (Google Drive, Dropbox, etc.)</label>
+                <div style={{ position: 'relative' }}>
+                  <input 
+                    type="url" 
+                    id="fileUrl"
+                    placeholder="https://drive.google.com/..."
+                    value={fileUrl}
+                    onChange={(e) => setFileUrl(e.target.value)}
+                    disabled={uploading}
+                    style={{ paddingLeft: '2.5rem' }}
+                    required
+                  />
+                  <Link2 size={16} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+                </div>
+              </div>
+
               <button 
-                onClick={handleDeleteAllFiles}
-                className="btn btn-danger"
-                style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem' }}
-                disabled={notes.length === 0}
+                type="submit" 
+                className="btn btn-primary w-full"
+                disabled={uploading}
               >
-                Delete All Uploads
+                {uploading ? 'Saving Link...' : 'Save Document Link'}
               </button>
+            </form>
+          </section>
+
+          {/* Right Pane: File Manager */}
+          <section className="admin-pane" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <h2 className="admin-pane-title" style={{ marginBottom: 0 }}>
+                <FileSpreadsheet size={20} style={{ color: 'var(--accent-color)' }} />
+                File Manager
+              </h2>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Filter:</span>
+                  <select 
+                    value={filterSemester} 
+                    onChange={(e) => setFilterSemester(e.target.value)}
+                    style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                  >
+                    <option value="All">All Semesters</option>
+                    {SEMESTERS.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+
+                <button 
+                  onClick={handleDeleteAllFiles}
+                  className="btn btn-danger"
+                  style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem' }}
+                  disabled={notes.length === 0}
+                >
+                  Delete All Uploads
+                </button>
+              </div>
+            </div>
+
+            {loadingFiles ? (
+              <div className="text-center" style={{ padding: '3rem 0', color: 'var(--text-secondary)' }}>
+                Loading files list...
+              </div>
+            ) : displayedNotes.length > 0 ? (
+              <div className="table-wrapper">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>File Name</th>
+                      <th>Semester</th>
+                      <th>Subject</th>
+                      <th>Type</th>
+                      <th style={{ textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {displayedNotes.map((note) => (
+                      <tr key={note.id}>
+                        <td>
+                          <div className="file-name-cell" title={note.fileName}>
+                            {note.fileName.length > 30 ? `${note.fileName.substring(0, 27)}...` : note.fileName}
+                          </div>
+                        </td>
+                        <td>{note.semester}</td>
+                        <td>{note.subject}</td>
+                        <td>
+                          <span className={`table-badge ${
+                            note.type === 'Module Notes' ? 'table-badge-notes' :
+                            note.type === 'Question Bank' ? 'table-badge-qbank' : 'table-badge-pyq'
+                          }`}>
+                            {note.type}
+                          </span>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button 
+                            className="btn btn-danger" 
+                            onClick={() => handleDeleteFile(note)}
+                            style={{ padding: '0.35rem', borderRadius: '4px' }}
+                            title="Delete document and DB record"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '3rem 1rem' }}>
+                <FileText size={36} style={{ color: 'var(--text-muted)' }} />
+                <h3>No Documents Found</h3>
+                <p>No course resources have been uploaded for {filterSemester === 'All' ? 'any semester' : filterSemester} yet.</p>
+              </div>
+            )}
+          </section>
+        </div>
+      )}
+
+      {activeTab === 'students' && (
+        <div className="admin-pane" style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+            <h2 className="admin-pane-title" style={{ marginBottom: 0 }}>
+              <FileText size={20} style={{ color: 'var(--accent-color)' }} />
+              Student Registrations
+            </h2>
+
+            <div className="search-bar-container">
+              <input 
+                type="text" 
+                className="search-input" 
+                placeholder="Search by Name, USN, or Email..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
 
-          {loadingFiles ? (
+          {loadingUsers ? (
             <div className="text-center" style={{ padding: '3rem 0', color: 'var(--text-secondary)' }}>
-              Loading files list...
-            </div>
-          ) : displayedNotes.length > 0 ? (
-            <div className="table-wrapper">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>File Name</th>
-                    <th>Semester</th>
-                    <th>Subject</th>
-                    <th>Type</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {displayedNotes.map((note) => (
-                    <tr key={note.id}>
-                      <td>
-                        <div className="file-name-cell" title={note.fileName}>
-                          {note.fileName.length > 30 ? `${note.fileName.substring(0, 27)}...` : note.fileName}
-                        </div>
-                      </td>
-                      <td>{note.semester}</td>
-                      <td>{note.subject}</td>
-                      <td>
-                        <span className={`table-badge ${
-                          note.type === 'Module Notes' ? 'table-badge-notes' :
-                          note.type === 'Question Bank' ? 'table-badge-qbank' : 'table-badge-pyq'
-                        }`}>
-                          {note.type}
-                        </span>
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <button 
-                          className="btn btn-danger" 
-                          onClick={() => handleDeleteFile(note)}
-                          style={{ padding: '0.35rem', borderRadius: '4px' }}
-                          title="Delete document and DB record"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              Loading registrations directory...
             </div>
           ) : (
-            <div className="empty-state" style={{ padding: '3rem 1rem' }}>
-              <FileText size={36} style={{ color: 'var(--text-muted)' }} />
-              <h3>No Documents Found</h3>
-              <p>No course resources have been uploaded for {filterSemester === 'All' ? 'any semester' : filterSemester} yet.</p>
-            </div>
+            (() => {
+              const students = users.filter(u => u.role === 'student');
+              const filteredStudents = students.filter(student => 
+                student.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                student.usn?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                student.email.toLowerCase().includes(searchQuery.toLowerCase())
+              );
+
+              return filteredStudents.length > 0 ? (
+                <div className="table-wrapper">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>Student Name</th>
+                        <th>USN</th>
+                        <th>Email Address</th>
+                        <th>Status</th>
+                        <th>Joined Date</th>
+                        <th style={{ textAlign: 'right' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredStudents.map((student) => (
+                        <tr key={student.uid}>
+                          <td>
+                            <div className="file-name-cell" style={{ fontWeight: 600 }} title={student.name}>
+                              {student.name}
+                            </div>
+                          </td>
+                          <td style={{ fontFamily: 'monospace', fontWeight: 600 }}>{student.usn || 'N/A'}</td>
+                          <td>{student.email}</td>
+                          <td>
+                            <span className={`table-badge ${student.suspended ? 'table-badge-suspended' : 'table-badge-active'}`}>
+                              {student.suspended ? 'Suspended' : 'Active'}
+                            </span>
+                          </td>
+                          <td>
+                            {student.createdAt ? new Date(student.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
+                          </td>
+                          <td style={{ textAlign: 'right' }}>
+                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                              <button 
+                                className={`btn ${student.suspended ? 'btn-success' : 'btn-warning'}`}
+                                onClick={() => handleToggleSuspendUser(student)}
+                                style={{ padding: '0.35rem 0.75rem', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 700 }}
+                              >
+                                {student.suspended ? 'Unsuspend' : 'Suspend'}
+                              </button>
+                              <button 
+                                className="btn btn-danger" 
+                                onClick={() => handleRemoveUser(student)}
+                                style={{ padding: '0.35rem', borderRadius: '4px' }}
+                                title="Remove Student Registration"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="empty-state" style={{ padding: '3rem 1rem' }}>
+                  <FileText size={36} style={{ color: 'var(--text-muted)' }} />
+                  <h3>No Students Found</h3>
+                  <p>
+                    {students.length === 0 
+                      ? 'No students have registered on this platform yet.' 
+                      : `No students match the search query "${searchQuery}".`}
+                  </p>
+                </div>
+              );
+            })()
           )}
-        </section>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

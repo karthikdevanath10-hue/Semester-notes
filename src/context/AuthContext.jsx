@@ -84,6 +84,10 @@ export const AuthProvider = ({ children }) => {
     const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
     if (userDoc.exists()) {
       const data = userDoc.data();
+      if (data.suspended) {
+        await signOut(auth);
+        throw new Error('Your account has been suspended by the administrator.');
+      }
       if (data.role !== role) {
         // Role mismatch logic
         await signOut(auth);
@@ -168,6 +172,14 @@ export const AuthProvider = ({ children }) => {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
             const data = userDoc.data();
+            if (data.suspended) {
+              await signOut(auth);
+              setCurrentUser(null);
+              setUserRole(null);
+              setUserData(null);
+              alert('Your account has been suspended by the administrator.');
+              return;
+            }
             setUserRole(data.role);
             setUserData(data);
           } else {
