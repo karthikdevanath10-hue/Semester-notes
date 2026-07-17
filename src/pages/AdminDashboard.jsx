@@ -32,6 +32,7 @@ const AdminDashboard = () => {
   const [semester, setSemester] = useState('P-Cycle');
   const [subject, setSubject] = useState(SUBJECTS_BY_SEM['P-Cycle'][0]);
   const [docType, setDocType] = useState('Module Notes');
+  const [department, setDepartment] = useState('All');
   const [fileName, setFileName] = useState('');
   const [fileUrl, setFileUrl] = useState('');
   
@@ -46,15 +47,17 @@ const AdminDashboard = () => {
   const [filterSemester, setFilterSemester] = useState('All');
   const [filterSubject, setFilterSubject] = useState('All');
   const [filterType, setFilterType] = useState('All');
+  const [filterDepartment, setFilterDepartment] = useState('All');
 
   // Edit Filename States
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [editingName, setEditingName] = useState('');
 
-  // Reset subject and category filters when semester filter changes
+  // Reset subject, category and department filters when semester filter changes
   useEffect(() => {
     setFilterSubject('All');
     setFilterType('All');
+    setFilterDepartment('All');
   }, [filterSemester]);
 
   // Sync subject selection when semester changes
@@ -114,7 +117,8 @@ const AdminDashboard = () => {
     const sameCategoryNotes = notes.filter(n => 
       n.semester === semester && 
       n.subject === subject && 
-      n.type === docType
+      n.type === docType &&
+      (n.department || 'All') === department
     );
     const nextSortOrder = sameCategoryNotes.length;
     
@@ -129,12 +133,14 @@ const AdminDashboard = () => {
         storagePath: '',
         uploadedBy: userData?.name || 'Admin',
         createdAt: new Date().toISOString(),
-        sortOrder: nextSortOrder
+        sortOrder: nextSortOrder,
+        department: department
       });
 
       setSuccessMsg(`"${fileName}" added successfully!`);
       setFileName('');
       setFileUrl('');
+      setDepartment('All');
     } catch (dbErr) {
       console.error('Firestore save failed:', dbErr);
       setErrorMsg('Failed to save document details to database.');
@@ -275,16 +281,18 @@ const AdminDashboard = () => {
     const semMatch = filterSemester === 'All' || note.semester === filterSemester;
     const subMatch = filterSubject === 'All' || note.subject.toLowerCase() === filterSubject.toLowerCase();
     const typeMatch = filterType === 'All' || note.type === filterType;
-    return semMatch && subMatch && typeMatch;
+    const deptMatch = filterDepartment === 'All' || (note.department || 'All') === filterDepartment;
+    return semMatch && subMatch && typeMatch && deptMatch;
   });
 
   const canReorder = filterSemester !== 'All' && filterSubject !== 'All' && filterType !== 'All';
-  const hasActiveFilters = filterSemester !== 'All' || filterSubject !== 'All' || filterType !== 'All';
+  const hasActiveFilters = filterSemester !== 'All' || filterSubject !== 'All' || filterType !== 'All' || filterDepartment !== 'All';
 
   const handleClearFilters = () => {
     setFilterSemester('All');
     setFilterSubject('All');
     setFilterType('All');
+    setFilterDepartment('All');
   };
 
   return (
@@ -380,6 +388,24 @@ const AdminDashboard = () => {
                 </select>
               </div>
 
+              {/* Department Selector */}
+              <div className="form-group">
+                <label htmlFor="department">Department Access</label>
+                <select 
+                  id="department" 
+                  value={department} 
+                  onChange={(e) => setDepartment(e.target.value)}
+                  disabled={uploading}
+                >
+                  <option value="All">All Departments</option>
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Artificial Intelligence">Artificial Intelligence</option>
+                  <option value="Civil Engineering">Civil Engineering</option>
+                  <option value="Electrical Engineering">Electrical Engineering</option>
+                  <option value="Mechanical Engineering">Mechanical Engineering</option>
+                </select>
+              </div>
+
               <div className="form-group">
                 <label htmlFor="fileName">Display File Name</label>
                 <input 
@@ -432,6 +458,20 @@ const AdminDashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Filter:</span>
                   
+                  {/* Department Filter */}
+                  <select
+                    value={filterDepartment}
+                    onChange={(e) => setFilterDepartment(e.target.value)}
+                    style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                  >
+                    <option value="All">All Departments</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Artificial Intelligence">Artificial Intelligence</option>
+                    <option value="Civil Engineering">Civil Engineering</option>
+                    <option value="Electrical Engineering">Electrical Engineering</option>
+                    <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  </select>
+
                   {/* Semester Filter */}
                   <select 
                     value={filterSemester} 
@@ -522,6 +562,7 @@ const AdminDashboard = () => {
                     <tr>
                       {canReorder && <th style={{ textAlign: 'center', width: '90px' }}>Order</th>}
                       <th>File Name</th>
+                      <th>Department</th>
                       <th>Semester</th>
                       <th>Subject</th>
                       <th>Type</th>
@@ -578,6 +619,9 @@ const AdminDashboard = () => {
                               {note.fileName.length > 30 ? `${note.fileName.substring(0, 27)}...` : note.fileName}
                             </div>
                           )}
+                        </td>
+                        <td style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                          {note.department || 'All'}
                         </td>
                         <td>{note.semester}</td>
                         <td>{note.subject}</td>

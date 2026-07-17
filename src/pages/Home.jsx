@@ -15,6 +15,7 @@ const DEPARTMENTS = [
 ];
 
 const ALL_DEPARTMENTS = DEPARTMENTS.map(d => d.name);
+const CS_AI_DEPS = ['Computer Science', 'Artificial Intelligence'];
 
 const SUBJECTS_DATA = [
   // P-Cycle (Physics Cycle - Common to all departments)
@@ -33,32 +34,32 @@ const SUBJECTS_DATA = [
   { title: 'Renewable Energy (RES)', emoji: '☀️', description: 'Study of solar energy, wind power, biomass, and other sustainable energy sources.', semester: 'E-Cycle', departments: ALL_DEPARTMENTS },
 
   // Semester 3
-  { title: 'Data Structures', emoji: '📊', description: 'Linear and non-linear data structures: lists, stacks, queues, trees, graphs.', semester: 'Sem 3', departments: [] },
-  { title: 'Computer Organization', emoji: '🖥️', description: 'Basic structure of computers, machine instructions, and ALU design.', semester: 'Sem 3', departments: [] },
-  { title: 'Discrete Mathematics', emoji: '🧠', description: 'Set theory, logic, combinatorics, graph theory, and relations.', semester: 'Sem 3', departments: [] },
+  { title: 'Data Structures', emoji: '📊', description: 'Linear and non-linear data structures: lists, stacks, queues, trees, graphs.', semester: 'Sem 3', departments: CS_AI_DEPS },
+  { title: 'Computer Organization', emoji: '🖥️', description: 'Basic structure of computers, machine instructions, and ALU design.', semester: 'Sem 3', departments: CS_AI_DEPS },
+  { title: 'Discrete Mathematics', emoji: '🧠', description: 'Set theory, logic, combinatorics, graph theory, and relations.', semester: 'Sem 3', departments: CS_AI_DEPS },
 
   // Semester 4
-  { title: 'Java Programming', emoji: '☕', description: 'Advanced object-oriented programming concepts using the Java platform.', semester: 'Sem 4', departments: [] },
-  { title: 'Algorithms (DAA)', emoji: '⚡', description: 'Algorithm design techniques, complexity analysis, and graph algorithms.', semester: 'Sem 4', departments: [] },
-  { title: 'Operating Systems', emoji: '💿', description: 'Process management, memory management, file systems, and concurrency.', semester: 'Sem 4', departments: [] },
+  { title: 'Java Programming', emoji: '☕', description: 'Advanced object-oriented programming concepts using the Java platform.', semester: 'Sem 4', departments: CS_AI_DEPS },
+  { title: 'Algorithms (DAA)', emoji: '⚡', description: 'Algorithm design techniques, complexity analysis, and graph algorithms.', semester: 'Sem 4', departments: CS_AI_DEPS },
+  { title: 'Operating Systems', emoji: '💿', description: 'Process management, memory management, file systems, and concurrency.', semester: 'Sem 4', departments: CS_AI_DEPS },
 
   // Semester 5
-  { title: 'DBMS', emoji: '🗄️', description: 'Relational databases, SQL queries, normalization, and transaction control.', semester: 'Sem 5', departments: [] },
-  { title: 'Computer Networks', emoji: '🌐', description: 'TCP/IP layers, routing algorithms, socket programming, and protocols.', semester: 'Sem 5', departments: [] },
-  { title: 'Software Engineering', emoji: '📝', description: 'Software development lifecycles, UML modeling, testing, and agile.', semester: 'Sem 5', departments: [] },
+  { title: 'DBMS', emoji: '🗄️', description: 'Relational databases, SQL queries, normalization, and transaction control.', semester: 'Sem 5', departments: CS_AI_DEPS },
+  { title: 'Computer Networks', emoji: '🌐', description: 'TCP/IP layers, routing algorithms, socket programming, and protocols.', semester: 'Sem 5', departments: CS_AI_DEPS },
+  { title: 'Software Engineering', emoji: '📝', description: 'Software development lifecycles, UML modeling, testing, and agile.', semester: 'Sem 5', departments: CS_AI_DEPS },
 
   // Semester 6
-  { title: 'Web Development', emoji: '🕸️', description: 'Full-stack web applications, HTML, CSS, JavaScript, Node.js, and React.', semester: 'Sem 6', departments: [] },
-  { title: 'Compiler Design', emoji: '⚙️', description: 'Lexical analysis, parsing, code generation, and optimization phases.', semester: 'Sem 6', departments: [] },
-  { title: 'Machine Learning', emoji: '🤖', description: 'Supervised and unsupervised learning, regression, neural networks.', semester: 'Sem 6', departments: [] },
+  { title: 'Web Development', emoji: '🕸️', description: 'Full-stack web applications, HTML, CSS, JavaScript, Node.js, and React.', semester: 'Sem 6', departments: CS_AI_DEPS },
+  { title: 'Compiler Design', emoji: '⚙️', description: 'Lexical analysis, parsing, code generation, and optimization phases.', semester: 'Sem 6', departments: ['Computer Science'] },
+  { title: 'Machine Learning', emoji: '🤖', description: 'Supervised and unsupervised learning, regression, neural networks.', semester: 'Sem 6', departments: CS_AI_DEPS },
 
   // Semester 7
-  { title: 'Information Security', emoji: '🔒', description: 'Cryptography, network security, threat modeling, and secure coding practices.', semester: 'Sem 7', departments: [] },
-  { title: 'Cloud Computing', emoji: '☁️', description: 'Virtualization, cloud architectures, storage services, and serverless computing.', semester: 'Sem 7', departments: [] },
+  { title: 'Information Security', emoji: '🔒', description: 'Cryptography, network security, threat modeling, and secure coding practices.', semester: 'Sem 7', departments: ['Computer Science'] },
+  { title: 'Cloud Computing', emoji: '☁️', description: 'Virtualization, cloud architectures, storage services, and serverless computing.', semester: 'Sem 7', departments: CS_AI_DEPS },
 
   // Semester 8
-  { title: 'Deep Learning', emoji: '🧠', description: 'Artificial neural networks, CNNs, RNNs, and generative AI models.', semester: 'Sem 8', departments: [] },
-  { title: 'Internet of Things', emoji: '🔌', description: 'Embedded systems, sensor networks, microcontrollers, and IoT protocols.', semester: 'Sem 8', departments: [] }
+  { title: 'Deep Learning', emoji: '🧠', description: 'Artificial neural networks, CNNs, RNNs, and generative AI models.', semester: 'Sem 8', departments: CS_AI_DEPS },
+  { title: 'Internet of Things', emoji: '🔌', description: 'Embedded systems, sensor networks, microcontrollers, and IoT protocols.', semester: 'Sem 8', departments: CS_AI_DEPS }
 ];
 
 const SEMESTERS = ['P-Cycle', 'E-Cycle', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
@@ -155,9 +156,14 @@ const Home = ({ onOpenLogin }) => {
     });
 
     notes.forEach((note) => {
+      // Safe fallback if note.department is not set (backwards compatible)
+      const noteDept = note.department || 'All';
+      const matchesDept = noteDept === 'All' || noteDept === selectedDept;
+
       if (
         note.semester === selectedSem &&
-        note.subject.toLowerCase() === subjectTitle.toLowerCase()
+        note.subject.toLowerCase() === subjectTitle.toLowerCase() &&
+        matchesDept
       ) {
         subjectFiles[note.type].push({
           id: note.id,

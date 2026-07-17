@@ -91,9 +91,8 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="footer-bottom-container">
-          <p className="copyright">© 2026 EETIRP.LTD. All rights reserved.</p>
-          <p className="batch-info">CSE Department - 2026 Batch</p>
-          <p className="creators">Created by KAURAHUB</p>
+          <p className="copyright">© 2026 Kaurahub | All rights reserved.</p>
+          <p className="creators">Powered by EETIRP</p>
         </div>
       </div>
     </footer>
