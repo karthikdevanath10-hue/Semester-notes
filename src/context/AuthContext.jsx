@@ -58,17 +58,80 @@ export const AuthProvider = ({ children }) => {
     if (role === 'admin') {
       const cleanId = id.trim().toLowerCase();
       if (cleanId === 'admin' && password === 'admin@123') {
-        const fakeUser = { uid: 'admin-local-uid', email: 'admin@semesternotes.local' };
-        const fakeData = { name: 'Admin', role: 'admin', email: 'admin@semesternotes.local', adminId: 'ADMIN' };
-        
-        localStorage.setItem('localAdminUser', JSON.stringify(fakeUser));
-        localStorage.setItem('localAdminRole', 'admin');
-        localStorage.setItem('localAdminData', JSON.stringify(fakeData));
+        let firebaseUser = null;
+        let adminProfile = { 
+          name: 'Admin', 
+          role: 'admin', 
+          email: 'admin@semesternotes.local', 
+          adminId: 'ADMIN' 
+        };
 
-        setCurrentUser(fakeUser);
+        try {
+          // Attempt to log in with real credentials in Firebase Auth
+          const userCredential = await signInWithEmailAndPassword(auth, 'admin@semesternotes.local', 'admin@123');
+          firebaseUser = userCredential.user;
+        } catch (authErr) {
+          // If the user doesn't exist, automatically sign them up to create the session
+          if (authErr.code === 'auth/user-not-found' || authErr.code === 'auth/invalid-credential' || authErr.code === 'auth/invalid-email') {
+            try {
+              const userCredential = await createUserWithEmailAndPassword(auth, 'admin@semesternotes.local', 'admin@123');
+              firebaseUser = userCredential.user;
+              
+              // Create the user document in Firestore to satisfy role rules
+              await setDoc(doc(db, 'users', firebaseUser.uid), {
+                uid: firebaseUser.uid,
+                name: 'Admin',
+                email: 'admin@semesternotes.local',
+                role: 'admin',
+                adminId: 'ADMIN',
+                createdAt: new Date().toISOString()
+              });
+            } catch (signUpErr) {
+              console.error('Failed to auto-create admin Auth account:', signUpErr);
+            }
+          } else {
+            console.error('Firebase Auth admin sign-in error:', authErr);
+          }
+        }
+
+        // If firebase sign-in/up succeeded, ensure Firestore document exists
+        if (firebaseUser) {
+          try {
+            const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+            if (!userDoc.exists()) {
+              await setDoc(doc(db, 'users', firebaseUser.uid), {
+                uid: firebaseUser.uid,
+                name: 'Admin',
+                email: 'admin@semesternotes.local',
+                role: 'admin',
+                adminId: 'ADMIN',
+                createdAt: new Date().toISOString()
+              });
+            }
+            adminProfile = {
+              uid: firebaseUser.uid,
+              name: 'Admin',
+              email: 'admin@semesternotes.local',
+              role: 'admin',
+              adminId: 'ADMIN'
+            };
+          } catch (dbErr) {
+            console.error('Failed to verify/create admin Firestore document:', dbErr);
+          }
+        }
+
+        const userSession = firebaseUser 
+          ? { uid: firebaseUser.uid, email: firebaseUser.email }
+          : { uid: 'admin-local-uid', email: 'admin@semesternotes.local' };
+
+        localStorage.setItem('localAdminUser', JSON.stringify(userSession));
+        localStorage.setItem('localAdminRole', 'admin');
+        localStorage.setItem('localAdminData', JSON.stringify(adminProfile));
+
+        setCurrentUser(userSession);
         setUserRole('admin');
-        setUserData(fakeData);
-        return fakeUser;
+        setUserData(adminProfile);
+        return userSession;
       } else {
         throw new Error('Invalid Admin credentials.');
       }
