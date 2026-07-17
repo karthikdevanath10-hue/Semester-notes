@@ -2229,3 +2229,12 @@ body {
   line-height: 1.5;
   margin-bottom: 1rem;
 }
+
+.btn-info {
+  background-color: var(--accent-color);
+  color: white !important;
+}
+
+.btn-info:hover {
+  filter: brightness(0.9);
+}

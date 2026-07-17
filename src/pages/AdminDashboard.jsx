@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../firebase/config';
 import { collection, addDoc, query, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
-import { UploadCloud, Trash2, FileText, CheckCircle2, AlertCircle, FileSpreadsheet, Link2, ChevronUp, ChevronDown } from 'lucide-react';
+import { UploadCloud, Trash2, FileText, CheckCircle2, AlertCircle, FileSpreadsheet, Link2, ChevronUp, ChevronDown, Edit2, Check, X, Eye } from 'lucide-react';
 
 const SEMESTERS = ['P-Cycle', 'E-Cycle', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'];
 
@@ -46,6 +46,10 @@ const AdminDashboard = () => {
   const [filterSemester, setFilterSemester] = useState('All');
   const [filterSubject, setFilterSubject] = useState('All');
   const [filterType, setFilterType] = useState('All');
+
+  // Edit Filename States
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editingName, setEditingName] = useState('');
 
   // Reset subject and category filters when semester filter changes
   useEffect(() => {
@@ -238,6 +242,34 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleStartEdit = (note) => {
+    setEditingNoteId(note.id);
+    setEditingName(note.fileName);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingNoteId(null);
+    setEditingName('');
+  };
+
+  const handleSaveEdit = async (note) => {
+    if (!editingName.trim()) {
+      alert('File name cannot be empty.');
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, 'notes', note.id), {
+        fileName: editingName.trim()
+      });
+      setEditingNoteId(null);
+      setEditingName('');
+    } catch (err) {
+      console.error('Error updating filename:', err);
+      alert('Failed to update file name.');
+    }
+  };
+
   // Filter notes in table
   const displayedNotes = notes.filter(note => {
     const semMatch = filterSemester === 'All' || note.semester === filterSemester;
@@ -247,6 +279,13 @@ const AdminDashboard = () => {
   });
 
   const canReorder = filterSemester !== 'All' && filterSubject !== 'All' && filterType !== 'All';
+  const hasActiveFilters = filterSemester !== 'All' || filterSubject !== 'All' || filterType !== 'All';
+
+  const handleClearFilters = () => {
+    setFilterSemester('All');
+    setFilterSubject('All');
+    setFilterType('All');
+  };
 
   return (
     <div className="main-content">
@@ -430,6 +469,29 @@ const AdminDashboard = () => {
                       ))}
                     </select>
                   )}
+
+                  {/* Clear Filters Button */}
+                  {hasActiveFilters && (
+                    <button
+                      onClick={handleClearFilters}
+                      className="btn btn-secondary"
+                      style={{ 
+                        padding: '0.35rem 0.75rem', 
+                        borderRadius: '6px', 
+                        fontSize: '0.8rem', 
+                        border: '1px solid var(--border-color)', 
+                        display: 'inline-flex', 
+                        alignItems: 'center', 
+                        gap: '0.25rem', 
+                        backgroundColor: 'var(--bg-tertiary)', 
+                        color: 'var(--text-secondary)',
+                        cursor: 'pointer' 
+                      }}
+                      title="Reset all filters to All"
+                    >
+                      <X size={12} /> Clear Filters
+                    </button>
+                  )}
                 </div>
 
                 <button 
@@ -476,7 +538,7 @@ const AdminDashboard = () => {
                                 type="button"
                                 className="btn-reorder"
                                 onClick={() => handleMoveNote(note, 'up', idx)}
-                                disabled={idx === 0}
+                                disabled={idx === 0 || editingNoteId === note.id}
                                 title="Move Up"
                               >
                                 <ChevronUp size={16} />
@@ -485,7 +547,7 @@ const AdminDashboard = () => {
                                 type="button"
                                 className="btn-reorder"
                                 onClick={() => handleMoveNote(note, 'down', idx)}
-                                disabled={idx === displayedNotes.length - 1}
+                                disabled={idx === displayedNotes.length - 1 || editingNoteId === note.id}
                                 title="Move Down"
                               >
                                 <ChevronDown size={16} />
@@ -494,9 +556,28 @@ const AdminDashboard = () => {
                           </td>
                         )}
                         <td>
-                          <div className="file-name-cell" title={note.fileName}>
-                            {note.fileName.length > 30 ? `${note.fileName.substring(0, 27)}...` : note.fileName}
-                          </div>
+                          {editingNoteId === note.id ? (
+                            <input 
+                              type="text" 
+                              value={editingName} 
+                              onChange={(e) => setEditingName(e.target.value)}
+                              style={{ 
+                                padding: '0.35rem 0.5rem', 
+                                borderRadius: '4px', 
+                                border: '1px solid var(--accent-color)', 
+                                width: '100%', 
+                                fontSize: '0.9rem', 
+                                color: 'var(--text-primary)', 
+                                backgroundColor: 'var(--bg-secondary)',
+                                outline: 'none'
+                              }}
+                              autoFocus
+                            />
+                          ) : (
+                            <div className="file-name-cell" title={note.fileName}>
+                              {note.fileName.length > 30 ? `${note.fileName.substring(0, 27)}...` : note.fileName}
+                            </div>
+                          )}
                         </td>
                         <td>{note.semester}</td>
                         <td>{note.subject}</td>
@@ -509,14 +590,57 @@ const AdminDashboard = () => {
                           </span>
                         </td>
                         <td style={{ textAlign: 'right' }}>
-                          <button 
-                            className="btn btn-danger" 
-                            onClick={() => handleDeleteFile(note)}
-                            style={{ padding: '0.35rem', borderRadius: '4px' }}
-                            title="Delete document and DB record"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            {editingNoteId === note.id ? (
+                              <>
+                                <button 
+                                  className="btn btn-success" 
+                                  onClick={() => handleSaveEdit(note)}
+                                  style={{ padding: '0.35rem', borderRadius: '4px' }}
+                                  title="Save Name"
+                                >
+                                  <Check size={14} />
+                                </button>
+                                <button 
+                                  className="btn btn-secondary" 
+                                  onClick={handleCancelEdit}
+                                  style={{ padding: '0.35rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}
+                                  title="Cancel"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <a 
+                                  href={note.fileUrl} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="btn btn-info" 
+                                  style={{ padding: '0.35rem', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                                  title="View/Open PDF"
+                                >
+                                  <Eye size={14} />
+                                </a>
+                                <button 
+                                  className="btn btn-warning" 
+                                  onClick={() => handleStartEdit(note)}
+                                  style={{ padding: '0.35rem', borderRadius: '4px', color: 'white' }}
+                                  title="Edit file name"
+                                >
+                                  <Edit2 size={14} />
+                                </button>
+                                <button 
+                                  className="btn btn-danger" 
+                                  onClick={() => handleDeleteFile(note)}
+                                  style={{ padding: '0.35rem', borderRadius: '4px' }}
+                                  title="Delete document and DB record"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
