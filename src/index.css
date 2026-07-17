@@ -9,24 +9,25 @@
   --text-secondary: #71717a;
   --text-muted: #a1a1aa;
   --border-color: #e4e4e7;
-  
-  --accent-color: #4f46e5; /* Indigo 600 */
+
+  --accent-color: #4f46e5;
+  /* Indigo 600 */
   --accent-hover: #4338ca;
   --accent-light: rgba(79, 70, 229, 0.08);
-  
+
   --success-color: #10b981;
   --danger-color: #ef4444;
   --warning-color: #f59e0b;
-  
+
   --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.01);
   --modal-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
   --border-radius-sm: 8px;
   --border-radius-md: 12px;
   --border-radius-lg: 20px;
-  
+
   --navbar-bg: rgba(250, 250, 250, 0.75);
   --transition-speed: 0.25s;
-  
+
   /* Glassmorphism variables */
   --glass-bg: rgba(255, 255, 255, 0.45);
   --glass-border: rgba(228, 228, 231, 0.6);
@@ -35,27 +36,31 @@
 
 [data-theme='dark'] {
   /* Dark Theme Variables */
-  --bg-primary: #09090b; /* Zinc 950 */
-  --bg-secondary: #18181b; /* Zinc 900 */
-  --bg-tertiary: #27272a; /* Zinc 800 */
+  --bg-primary: #09090b;
+  /* Zinc 950 */
+  --bg-secondary: #18181b;
+  /* Zinc 900 */
+  --bg-tertiary: #27272a;
+  /* Zinc 800 */
   --text-primary: #fafafa;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
   --border-color: #27272a;
-  
-  --accent-color: #6366f1; /* Indigo 500 */
+
+  --accent-color: #6366f1;
+  /* Indigo 500 */
   --accent-hover: #818cf8;
   --accent-light: rgba(99, 102, 241, 0.1);
-  
+
   --success-color: #34d399;
   --danger-color: #f87171;
   --warning-color: #fbbf24;
-  
+
   --card-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.2);
   --modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-  
+
   --navbar-bg: rgba(9, 9, 11, 0.75);
-  
+
   /* Glassmorphism variables */
   --glass-bg: rgba(24, 24, 27, 0.45);
   --glass-border: rgba(255, 255, 255, 0.08);
@@ -87,13 +92,16 @@ body {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-primary);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--bg-tertiary);
   border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
@@ -443,11 +451,13 @@ body {
   gap: 0.5rem;
   overflow-x: auto;
   padding-bottom: 0.5rem;
-  scrollbar-width: none; /* Hide standard scrollbar on Firefox */
+  scrollbar-width: none;
+  /* Hide standard scrollbar on Firefox */
 }
 
 .semester-tabs::-webkit-scrollbar {
-  display: none; /* Hide on Chrome/Safari */
+  display: none;
+  /* Hide on Chrome/Safari */
 }
 
 .sem-tab {
@@ -526,12 +536,15 @@ body {
 .emoji-wrapper.grad-blue {
   background: linear-gradient(135deg, #0ea5e9, #0284c7);
 }
+
 .emoji-wrapper.grad-green {
   background: linear-gradient(135deg, #10b981, #047857);
 }
+
 .emoji-wrapper.grad-purple {
   background: linear-gradient(135deg, #d946ef, #a21caf);
 }
+
 .emoji-wrapper.grad-teal {
   background: linear-gradient(135deg, #14b8a6, #0f766e);
 }
@@ -643,6 +656,7 @@ body {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -719,7 +733,8 @@ body {
   color: var(--text-primary);
 }
 
-.form-group input, .form-group select {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 0.75rem 1rem;
   background-color: var(--bg-tertiary);
@@ -732,7 +747,8 @@ body {
   transition: border-color var(--transition-speed) ease;
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus,
+.form-group select:focus {
   border-color: var(--accent-color);
 }
 
@@ -979,9 +995,17 @@ body {
 }
 
 /* Utilities */
-.text-center { text-align: center; }
-.mt-4 { margin-top: 1rem; }
-.w-full { width: 100%; }
+.text-center {
+  text-align: center;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
 
 /* Subject Card Dropdown Accordion Styling */
 .subject-title-area {
@@ -1108,7 +1132,8 @@ body {
   bottom: 0;
   background-color: rgba(9, 9, 11, 0.7);
   backdrop-filter: blur(4px);
-  z-index: 1200; /* Higher than modal */
+  z-index: 1200;
+  /* Higher than modal */
   display: flex;
   justify-content: flex-end;
 }
@@ -1131,6 +1156,7 @@ body {
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -1368,7 +1394,7 @@ body {
   .navbar-container {
     padding: 0.75rem 1rem;
   }
-  
+
   .navbar-links {
     display: none;
   }
@@ -1380,7 +1406,7 @@ body {
   .mobile-menu-dropdown {
     display: flex;
   }
-  
+
   .navbar-actions {
     gap: 0.65rem;
   }
@@ -1405,7 +1431,7 @@ body {
   .btn-sm-nav span {
     display: none;
   }
-  
+
   .btn-sm-nav {
     padding: 0 !important;
     border-radius: 50% !important;
@@ -1415,23 +1441,23 @@ body {
     align-items: center;
     justify-content: center;
   }
-  
+
   .theme-toggle-btn {
     width: 36px;
     height: 36px;
   }
-  
+
   /* Make the glassmorphism header card look neat on mobile screens */
   .page-header {
     padding: 2rem 1.25rem;
     margin-bottom: 2rem;
     border-radius: 16px;
   }
-  
+
   .page-title {
     font-size: 1.85rem;
   }
-  
+
   .page-subtitle {
     font-size: 0.95rem;
   }
@@ -1446,7 +1472,8 @@ body {
 .landing-section {
   margin-top: 5.5rem;
   padding-top: 2.5rem;
-  scroll-margin-top: 80px; /* offset for fixed sticky header scroll */
+  scroll-margin-top: 80px;
+  /* offset for fixed sticky header scroll */
 }
 
 .section-header {
@@ -1713,6 +1740,7 @@ body {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+
   .contact-form-card {
     padding: 1.5rem;
   }
