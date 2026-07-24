@@ -71,26 +71,26 @@ const Navbar = ({ onOpenLogin }) => {
           {currentUser ? (
             <>
               {userRole === 'admin' && (
-                <Link to="/admin" className="nav-text-link" onClick={handleLinkClick}>
+                <Link to="/admin" className="nav-text-link desktop-only-nav" onClick={handleLinkClick}>
                   <LayoutDashboard size={15} />
                   <span>Admin Panel</span>
                 </Link>
               )}
 
-              <div className="user-nav-badge">
+              <div className="user-nav-badge desktop-only-nav">
                 <span className="user-nav-badge-name">{userData?.name || 'User'}</span>
                 <span className="user-nav-badge-role">
                   {userRole === 'admin' ? 'Faculty' : userData?.usn || 'Student'}
                 </span>
               </div>
 
-              <button className="btn btn-outline btn-sm-nav" onClick={handleLogout} style={{ padding: '0.45rem 0.85rem', fontSize: '0.8rem', borderRadius: '20px' }}>
+              <button className="btn btn-outline btn-sm-nav desktop-only-nav" onClick={handleLogout} style={{ padding: '0.45rem 0.85rem', fontSize: '0.8rem', borderRadius: '20px' }}>
                 <LogOut size={14} />
                 <span>Logout</span>
               </button>
             </>
           ) : (
-            <button className="btn btn-primary" onClick={onOpenLogin} style={{ borderRadius: '20px', padding: '0.45rem 1.1rem', fontSize: '0.82rem' }}>
+            <button className="btn btn-primary desktop-only-nav" onClick={onOpenLogin} style={{ borderRadius: '20px', padding: '0.45rem 1.1rem', fontSize: '0.82rem' }}>
               <LogIn size={15} />
               <span>Login / Sign Up</span>
             </button>
@@ -114,6 +114,45 @@ const Navbar = ({ onOpenLogin }) => {
           <a href="/#about" className="mobile-nav-link" onClick={handleLinkClick}>About Us</a>
           <a href="/#departments" className="mobile-nav-link" onClick={handleLinkClick}>Departments</a>
           <a href="/#contact" className="mobile-nav-link" onClick={handleLinkClick}>Contact</a>
+
+          {/* Mobile Account / Auth Section */}
+          <div className="mobile-menu-auth">
+            {currentUser ? (
+              <>
+                <div className="mobile-user-card">
+                  <div className="mobile-user-details">
+                    <span className="mobile-user-name">{userData?.name || 'User'}</span>
+                    <span className="mobile-user-role-badge">
+                      {userRole === 'admin' ? 'FACULTY ADMIN' : `USN: ${userData?.usn || 'Student'}`}
+                    </span>
+                  </div>
+                </div>
+
+                {userRole === 'admin' && (
+                  <Link to="/admin" className="mobile-nav-link mobile-admin-link" onClick={handleLinkClick}>
+                    <LayoutDashboard size={18} />
+                    <span>Admin Panel</span>
+                  </Link>
+                )}
+
+                <button
+                  className="btn btn-danger w-full mobile-auth-btn"
+                  onClick={() => { handleLogout(); handleLinkClick(); }}
+                >
+                  <LogOut size={16} />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <button
+                className="btn btn-primary w-full mobile-auth-btn"
+                onClick={() => { onOpenLogin(); handleLinkClick(); }}
+              >
+                <LogIn size={16} />
+                <span>Login / Sign Up</span>
+              </button>
+            )}
+          </div>
         </div>
       )}
     </nav>

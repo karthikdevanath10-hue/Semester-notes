@@ -299,11 +299,11 @@ const AdminDashboard = () => {
     <div className="main-content">
       <header className="admin-header">
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Faculty Control Center</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Manage course resources, user accounts, and system data.</p>
+          <h1 className="admin-title">Faculty Control Center</h1>
+          <p className="admin-subtitle">Manage course resources, user accounts, and system data.</p>
         </div>
-        <div className="user-badge" style={{ backgroundColor: 'var(--accent-light)' }}>
-          <span className="user-badge-name" style={{ color: 'var(--accent-color)', fontWeight: 700 }}>
+        <div className="user-badge admin-user-badge">
+          <span className="user-badge-name">
             {userData?.name || 'Administrator'}
           </span>
           <span className="user-badge-role">Faculty</span>
@@ -447,22 +447,22 @@ const AdminDashboard = () => {
           </section>
 
           {/* Right Pane: File Manager */}
-          <section className="admin-pane" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <section className="admin-pane">
+            <div className="admin-file-header">
               <h2 className="admin-pane-title" style={{ marginBottom: 0 }}>
                 <FileSpreadsheet size={20} style={{ color: 'var(--accent-color)' }} />
                 File Manager
               </h2>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Filter:</span>
+              <div className="admin-filter-bar">
+                <div className="admin-filter-group">
+                  <span className="filter-label">Filter:</span>
                   
                   {/* Department Filter */}
                   <select
                     value={filterDepartment}
                     onChange={(e) => setFilterDepartment(e.target.value)}
-                    style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                    className="admin-filter-select"
                   >
                     <option value="All">All Departments</option>
                     <option value="Computer Science">Computer Science</option>
@@ -476,7 +476,7 @@ const AdminDashboard = () => {
                   <select 
                     value={filterSemester} 
                     onChange={(e) => setFilterSemester(e.target.value)}
-                    style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                    className="admin-filter-select"
                   >
                     <option value="All">All Semesters</option>
                     {SEMESTERS.map(s => <option key={s} value={s}>{s}</option>)}
@@ -487,7 +487,7 @@ const AdminDashboard = () => {
                     <select
                       value={filterSubject}
                       onChange={(e) => setFilterSubject(e.target.value)}
-                      style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                      className="admin-filter-select"
                     >
                       <option value="All">All Subjects</option>
                       {SUBJECTS_BY_SEM[filterSemester].map(sub => (
@@ -501,7 +501,7 @@ const AdminDashboard = () => {
                     <select
                       value={filterType}
                       onChange={(e) => setFilterType(e.target.value)}
-                      style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                      className="admin-filter-select"
                     >
                       <option value="All">All Categories</option>
                       {['Module Notes', 'Question Bank', 'PYQs'].map(t => (
@@ -514,30 +514,17 @@ const AdminDashboard = () => {
                   {hasActiveFilters && (
                     <button
                       onClick={handleClearFilters}
-                      className="btn btn-secondary"
-                      style={{ 
-                        padding: '0.35rem 0.75rem', 
-                        borderRadius: '6px', 
-                        fontSize: '0.8rem', 
-                        border: '1px solid var(--border-color)', 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        gap: '0.25rem', 
-                        backgroundColor: 'var(--bg-tertiary)', 
-                        color: 'var(--text-secondary)',
-                        cursor: 'pointer' 
-                      }}
+                      className="btn btn-secondary btn-clear-filters"
                       title="Reset all filters to All"
                     >
-                      <X size={12} /> Clear Filters
+                      <X size={14} /> Clear Filters
                     </button>
                   )}
                 </div>
 
                 <button 
                   onClick={handleDeleteAllFiles}
-                  className="btn btn-danger"
-                  style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', fontSize: '0.8rem' }}
+                  className="btn btn-danger btn-delete-all"
                   disabled={notes.length === 0}
                 >
                   Delete All Uploads
@@ -703,8 +690,8 @@ const AdminDashboard = () => {
       )}
 
       {activeTab === 'students' && (
-        <div className="admin-pane" style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="admin-pane" style={{ marginTop: '1.5rem' }}>
+          <div className="admin-student-header">
             <h2 className="admin-pane-title" style={{ marginBottom: 0 }}>
               <FileText size={20} style={{ color: 'var(--accent-color)' }} />
               Student Registrations
